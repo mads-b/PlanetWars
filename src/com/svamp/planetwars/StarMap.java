@@ -232,19 +232,10 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
 
         //Create center star
         stars[0] = new StarSprite(0.15f,starDrawables[0]);
-        stars[0].setPos(-0.15f,-MAX_RADIUS-0.15f);
+        stars[0].setPos(-0.15f,-0.15f);
         stars[0].setElementHash(1337);
-        stars[1] = new StarSprite(0.15f,starDrawables[0]);
-        stars[1].setPos(-MAX_RADIUS-0.15f,-0.15f);
-        stars[1].setElementHash(1336);
-        stars[2] = new StarSprite(0.15f,starDrawables[0]);
-        stars[2].setPos(MAX_RADIUS-0.15f,-0.15f);
-        stars[2].setElementHash(1335);
-        stars[3] = new StarSprite(0.15f,starDrawables[0]);
-        stars[3].setPos(-0.15f,MAX_RADIUS-0.15f);
-        stars[3].setElementHash(1334);
 
-        for(int i=4;i<numStars;i++) {
+        for(int i=1;i<numStars;i++) {
 
             double t = 0.5+tMax * Math.pow(Math.random(),0.15f);
             double x = a * Math.exp(b * t) * Math.cos(t);

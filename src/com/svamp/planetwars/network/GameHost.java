@@ -36,7 +36,7 @@ public class GameHost extends AbstractGameCommunicator {
      */
     public GameHost(int portNum,int maxClients) {
         super(portNum);
-        this.starMap = StarMap.makeSpiralGalaxy(10);
+        this.starMap = StarMap.makeSpiralGalaxy(50);
         this.shipMap = new ShipMap(this,starMap);
         this.maxClients = maxClients;
     }

@@ -3,6 +3,7 @@ package com.svamp.planetwars;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLU;
 import android.opengl.Matrix;
 import android.os.Handler;
 import android.util.Log;
@@ -21,6 +22,8 @@ class GameRenderer implements GLSurfaceView.Renderer {
     private float[] viewMatrix = new float[16];
     private float[] pvMatrix = new float[16];
     private Vector screendims = new Vector(0,0);
+
+    private float scalation;
 
     private static final String TAG = "com.svamp.GameRenderer";
     //Time between updates, in seconds.
@@ -47,7 +50,7 @@ class GameRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glClearColor(0f,0f,0f,0f);
         Log.d(TAG, "SurfaceCreated.");
-        Matrix.setLookAtM(viewMatrix, 0, 0, 0f, 2.5f, 0, 0f, 0, 0, 1f, 0);
+        Matrix.setLookAtM(viewMatrix, 0, 0, 0f, 2.5f, 0, 0f, 0, 0f, 1f, 0);
     }
 
     @Override
@@ -84,7 +87,9 @@ class GameRenderer implements GLSurfaceView.Renderer {
     }
 
 
-    public void move(Vector start, Vector end) {
+    public void move(Vector start, Vector dist) {
+        Vector end = new Vector(start);
+        end.add(dist.x, dist.y);
         scaleToGameCoords(start);
         scaleToGameCoords(end);
         Matrix.translateM(viewMatrix,0,end.x-start.x,end.y-start.y,0);
@@ -101,24 +106,27 @@ class GameRenderer implements GLSurfaceView.Renderer {
      * @param pos Screen coords to scale. Float array of length 4.
      */
     public void scaleToGameCoords(Vector pos) {
-        //scale pixel values to openGL screen size [-1,1] both directions.
-        float[] coord = new float[2];
-        coord[0] = 2*pos.x/screendims.x-1;
-        coord[1] = 1-2*pos.y/screendims.y;
+        float[] res = new float[4];
+        float[] res2 = new float[4];
+        GLU.gluUnProject(pos.x,screendims.y-pos.y,-1,
+                viewMatrix,0,
+                projMatrix,0,
+                new int[] {0,0,(int) screendims.x, (int) screendims.y},0,
+                res,0);
+        GLU.gluUnProject(pos.x,screendims.y-pos.y,1,
+                viewMatrix,0,
+                projMatrix,0,
+                new int[] {0,0,(int) screendims.x, (int) screendims.y},0,
+                res2,0);
+        res[0] /= res[3];
+        res[1] /= res[3];
+        res[2] /= res[3];
+        res2[0] /= res2[3];
+        res2[1] /= res2[3];
+        res2[2] /= res2[3];
 
-        Log.d(TAG,"Touched screen GL coord "+coord[0]+" X "+coord[1]);
-        float[] iM = new float[16]; //Inverted matrix
-        if(!Matrix.invertM(iM,0,pvMatrix,0)) Log.e(TAG,"Matrix inversion failed!");
-        // Z and W in normal space.
-        float z = -(iM[8]*coord[0]+iM[9]*coord[1]+iM[11])/iM[10];
-        float w = 1/(iM[12]*coord[0]+iM[13]*coord[1]+iM[14]*z+iM[15]);
-
-        //World coords:
-        float x = w*(iM[0]*coord[0]+iM[1]*coord[1]+iM[2]*z+iM[3]);
-        float y = w*(iM[4]*coord[0]+iM[5]*coord[1]+iM[6]*z+iM[7]);
-
-        pos.set(x,y);
-        Log.d(TAG,"Inverted: "+Arrays.toString(iM));
-        Log.d(TAG,"Ray: "+pos.x+" X "+pos.y);
+        //Compute where the line through these two points intersect the z=0 plane:
+        float t = res[2]/(res[2]-res2[2]);
+        pos.set(res[0]+t*(res2[0]-res[0]),res[1]+t*(res2[1]-res[1]));
     }
 }

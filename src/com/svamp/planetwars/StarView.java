@@ -64,6 +64,8 @@ public class StarView extends GLSurfaceView implements TouchCallback {
     @Override
     public void touched(Vector pos) {
         renderer.scaleToGameCoords(pos);
+        Log.d(TAG, "Touched z=0 plane at "+pos);
+        //TODO: game must respond here. Send this message to gEngine? What about HUD?
     }
 
     @Override
@@ -72,8 +74,8 @@ public class StarView extends GLSurfaceView implements TouchCallback {
     }
 
     @Override
-    public void move(Vector start, Vector end) {
-        renderer.move(start, end);
+    public void move(Vector start, Vector dist) {
+        renderer.move(start, dist);
     }
 
     @Override

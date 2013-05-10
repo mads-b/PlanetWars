@@ -37,9 +37,8 @@ public class TouchHandler {
         // Handle touch events here...
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN: //One finger touch
-                //Reset motion counter
-                motion.set(0,0);
                 start.set(event.getX(), event.getY());
+                motion.set(0,0);
                 mode = DRAG;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN: // >one finger touch
@@ -67,7 +66,7 @@ public class TouchHandler {
             case MotionEvent.ACTION_MOVE:
                 if (mode == DRAG) {
                     //Inform gEngine of motion since last message.
-                    callback.move(start,new Vector(event.getX()-motion.x,event.getY()-motion.y));
+                    callback.move(start,new Vector(event.getX()-motion.x-start.x,event.getY()-motion.y-start.y));
                     //Register grand total moved.
                     motion.set(event.getX() - start.x, event.getY() - start.y);
 
