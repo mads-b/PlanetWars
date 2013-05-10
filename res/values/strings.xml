@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PlanetWars</string>
+    <string name="host_ip_text">Host IP:</string>
+    <string name="host_button">Host game!</string>
+    <string name="join_field">192.168.0.167:</string>
+    <string name="join_button">Join game!</string>
+    <string name="return_button">Return</string>
+    <string name="retry_button">Retry</string>
+    <string name="start_game_button">Start game</string>
+
+    <string name="connecting_to_host_string">Connecting to host.. Please wait..</string>
+    <string name="conn_failed_unreachable_string">Error while connecting! Host not reachable.</string>
+    <string name="conn_failed_string">Error while connecting! Connection refused!</string>
+    <string name="conn_failed_full_string">Error while connecting! This game is full!</string>
+</resources>

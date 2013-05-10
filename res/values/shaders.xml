@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="shader_tex_vert">
+  uniform mat4 MVPMatrix;
+  attribute vec4 position;
+  attribute vec2 texCoordinate;
+  varying vec2 varTexCoordinate;
+  void main()
+  {
+      gl_Position = MVPMatrix * position;
+      varTexCoordinate = texCoordinate;
+  }
+  </string>
+  <string name="shader_tex_frag">
+  precision mediump float;
+  uniform sampler2D texture;
+  varying vec2 varTexCoordinate;
+  void main()
+  {
+      gl_FragColor = texture2D(texture, varTexCoordinate);
+  }
+  </string>
+</resources>

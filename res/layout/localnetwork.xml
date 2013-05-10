@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent">
+
+<Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/host_button"
+        android:id="@+id/host_button"/>
+<EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="@string/join_field"
+        android:id="@+id/join_field"/>
+<Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/join_button"
+        android:id="@+id/join_button"/>
+</LinearLayout>
