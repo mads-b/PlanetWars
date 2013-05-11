@@ -21,6 +21,7 @@ class GameRenderer implements GLSurfaceView.Renderer {
     private float[] projMatrix = new float[16];
     private float[] viewMatrix = new float[16];
     private float[] pvMatrix = new float[16];
+    private float[] pvMatrixInverse = new float[16];
     private Vector screendims = new Vector(0,0);
 
     private float scalation;
@@ -63,14 +64,13 @@ class GameRenderer implements GLSurfaceView.Renderer {
         Log.d(TAG,"Ratio: "+ratio);
         Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1, 1, 1f, 5f);
 
-        Matrix.multiplyMM(pvMatrix, 0, projMatrix, 0, viewMatrix, 0);
+        remakePvMatrix();
         // Preload all shaders.
         AbstractSprite.initShaders(context);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        Matrix.multiplyMM(pvMatrix, 0, projMatrix, 0, viewMatrix, 0);
         //Matrix.rotateM(viewMatrix,0,-.5f,.0f,.0f,1);
         // Timer block to limit framerate.
         long endTime = System.currentTimeMillis();
@@ -93,40 +93,47 @@ class GameRenderer implements GLSurfaceView.Renderer {
         scaleToGameCoords(start);
         scaleToGameCoords(end);
         Matrix.translateM(viewMatrix,0,end.x-start.x,end.y-start.y,0);
+        remakePvMatrix();
     }
 
     public void scale(Vector center, float degree) {
         scaleToGameCoords(center);
-        Matrix.translateM(viewMatrix,0,0,0,degree-1);
+        Matrix.translateM(viewMatrix,0,center.x,center.y,0);
+        Matrix.scaleM(viewMatrix,0,degree,degree,degree);
+        Matrix.translateM(viewMatrix,0,-center.x,-center.y,0);
+        remakePvMatrix();
     }
 
 
+    private float[] tmp = new float[4];
+    private float[] tmp2 = new float[4];
     /**
      * Scale screen coords to game coords using the VP matrix.
      * @param pos Screen coords to scale. Float array of length 4.
      */
     public void scaleToGameCoords(Vector pos) {
-        float[] res = new float[4];
-        float[] res2 = new float[4];
-        GLU.gluUnProject(pos.x,screendims.y-pos.y,-1,
-                viewMatrix,0,
-                projMatrix,0,
-                new int[] {0,0,(int) screendims.x, (int) screendims.y},0,
-                res,0);
-        GLU.gluUnProject(pos.x,screendims.y-pos.y,1,
-                viewMatrix,0,
-                projMatrix,0,
-                new int[] {0,0,(int) screendims.x, (int) screendims.y},0,
-                res2,0);
-        res[0] /= res[3];
-        res[1] /= res[3];
-        res[2] /= res[3];
-        res2[0] /= res2[3];
-        res2[1] /= res2[3];
-        res2[2] /= res2[3];
+        tmp[0] = tmp2[0] = 2*pos.x/screendims.x-1;
+        tmp[1] = tmp2[1] = 1-2*pos.y/screendims.y;
+        tmp[3] = tmp2[3] = 1;
+        tmp[2] = -1;
+        tmp2[2] = 1;
+        Matrix.multiplyMV(tmp,0,pvMatrixInverse,0,tmp,0);
+        Matrix.multiplyMV(tmp2,0,pvMatrixInverse,0,tmp2,0);
+
+        tmp[0] /= tmp[3];
+        tmp[1] /= tmp[3];
+        tmp[2] /= tmp[3];
+        tmp2[0] /= tmp2[3];
+        tmp2[1] /= tmp2[3];
+        tmp2[2] /= tmp2[3];
 
         //Compute where the line through these two points intersect the z=0 plane:
-        float t = res[2]/(res[2]-res2[2]);
-        pos.set(res[0]+t*(res2[0]-res[0]),res[1]+t*(res2[1]-res[1]));
+        float t = tmp[2]/(tmp[2]-tmp2[2]);
+        pos.set(tmp[0]+t*(tmp2[0]-tmp[0]),tmp[1]+t*(tmp2[1]-tmp[1]));
+    }
+
+    private void remakePvMatrix() {
+        Matrix.multiplyMM(pvMatrix, 0, projMatrix, 0, viewMatrix, 0);
+        if(!Matrix.invertM(pvMatrixInverse,0,pvMatrix,0)) Log.e(TAG,"ERROR! Singular PV Matrix!");
     }
 }

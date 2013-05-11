@@ -23,6 +23,8 @@ public class TouchHandler {
 
     //Constantly remember how far we have moved in the DRAG mode
     private final Vector motion=new Vector(0,0);
+    //Temp vector to avoid initializing often.
+    private final Vector tmp = new Vector(0,0);
 
     public TouchHandler(TouchCallback callback) {
         this.callback = callback;
@@ -44,21 +46,20 @@ public class TouchHandler {
             case MotionEvent.ACTION_POINTER_DOWN: // >one finger touch
                 oldDist = spacing(event);
                 if (oldDist > 10f) {
-                    midPoint(mid, event);
                     mode = ZOOM;
                 }
                 break;
             //Removed fingers from screen
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-
+                tmp.set(event.getX(), event.getY());
                 //Touch time less than max time. Notify GameEngine of click
                 if(event.getEventTime()-event.getDownTime()< TOUCH_MAX_TIME_DOWN_MS) {
-                    callback.touched(new Vector(event.getX(), event.getY()));
+                    callback.touched(tmp);
                 }
                 //Not a click. Check if finger has moved so little that it counts as a long click. Also, a long click is defined as a drag action.
                 else if (motion.lengthSq()<100 && mode==DRAG) {
-                    callback.longTouched(new Vector(event.getX(), event.getY()));
+                    callback.longTouched(tmp);
                 }
 
                 mode = NONE;
@@ -66,7 +67,8 @@ public class TouchHandler {
             case MotionEvent.ACTION_MOVE:
                 if (mode == DRAG) {
                     //Inform gEngine of motion since last message.
-                    callback.move(start,new Vector(event.getX()-motion.x-start.x,event.getY()-motion.y-start.y));
+                    tmp.set(event.getX()-motion.x-start.x,event.getY()-motion.y-start.y);
+                    callback.move(start,tmp);
                     //Register grand total moved.
                     motion.set(event.getX() - start.x, event.getY() - start.y);
 
@@ -75,6 +77,7 @@ public class TouchHandler {
                     float newDist = spacing(event);
                     if (newDist > 10f) {
                         float scale = newDist / oldDist;
+                        midPoint(mid, event);
                         callback.scale(mid,scale);
                         oldDist=newDist;
                     }
