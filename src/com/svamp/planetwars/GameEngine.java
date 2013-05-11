@@ -1,17 +1,12 @@
 package com.svamp.planetwars;
 
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.network.DataPacketListener;
 import com.svamp.planetwars.network.GameClient;
 import com.svamp.planetwars.network.GameEvent;
 import com.svamp.planetwars.network.PackageHeader;
 import com.svamp.planetwars.network.Player;
-import com.svamp.planetwars.sprite.SpriteFactory;
 import com.svamp.planetwars.sprite.StarSprite;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -70,9 +65,9 @@ public class GameEngine implements DataPacketListener {
      * Draw call thrown from GameRenderer. Called synchronously with update().
      * @param mvpMatrix Transformation matrix.
      */
-    public void draw(float[] mvpMatrix) {
-        starMap.draw(mvpMatrix);
-        shipMap.draw(mvpMatrix);
+    public void draw(GL10 glUnused, float[] mvpMatrix) {
+        starMap.draw(glUnused, mvpMatrix);
+        shipMap.draw(glUnused, mvpMatrix);
         //hud.draw();
     }
 

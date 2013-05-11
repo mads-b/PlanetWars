@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,14 +36,16 @@ public class GameActivity extends Activity implements DataPacketListener,View.On
     private Handler refreshHandler;
     private StarView starView;
 
-    private static final String TAG = "com.svamp.GameActivity";
+    private static final String TAG = GameActivity.class.getCanonicalName();
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Initialize the SpriteFactory
-        SpriteFactory.getInstance().initialize(this.getResources());
+        SpriteFactory.getInstance().initialize(getResources());
+        ShaderTool.init(getResources());
+
         setContentView(R.layout.game);
         Button startGame = (Button) findViewById(R.id.start_game_button);
         startGame.setOnClickListener(this);

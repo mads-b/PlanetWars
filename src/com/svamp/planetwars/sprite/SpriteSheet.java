@@ -1,8 +1,6 @@
 package com.svamp.planetwars.sprite;
 
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
@@ -70,7 +68,7 @@ public class SpriteSheet {
         if(dirFrame==numDirs) dirFrame=0;
     }
 
-    public void draw(float[] mvpMatrix) {
+    public void draw(GL10 glUnused, float[] mvpMatrix) {
         //Draw quad with subset of spritesheet on.
     }
 }

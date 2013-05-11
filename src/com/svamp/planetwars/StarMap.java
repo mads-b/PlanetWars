@@ -49,7 +49,7 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
 
     private final static float MAX_RADIUS = 2.5f;
 
-    private static final String TAG = "com.svamp.StarMap";
+    private static final String TAG = StarMap.class.getCanonicalName();
 
     private final static Paint pathPaint = new Paint();
 
@@ -64,9 +64,9 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
     //Internal constructor.
     private StarMap() {}
 
-    public void draw(float[] mvpMatrix) {
+    public void draw(GL10 glUnused, float[] mvpMatrix) {
         for(Sprite s : blobs) {
-            s.draw(mvpMatrix);
+            s.draw(glUnused, mvpMatrix);
         }
         //Viewport changed since last time. Rebuild list of Stars to draw.
         //if(rebuildStarList) {
@@ -74,7 +74,7 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
          //   rebuildStarList=false;
         //}
         for(Sprite ss : stars)
-            ss.draw(mvpMatrix);
+            ss.draw(glUnused, mvpMatrix);
     }
 
     public void update(float dt) {
@@ -313,10 +313,10 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
             //Regenerate metaballs..
             List<BlobSprite> newBlobs = new ArrayList<BlobSprite>();
             RectF blobBound = new RectF(
-                    -0.3f,
-                    -0.3f,
-                    0.3f+MAX_RADIUS*2,
-                    0.3f+MAX_RADIUS*2);
+                    -MAX_RADIUS*1.1f,
+                    -MAX_RADIUS*1.1f,
+                    MAX_RADIUS*1.1f,
+                    MAX_RADIUS*1.1f);
 
             MetaBalls metaBalls = new MetaBalls(blobBound,stars);
             int i=0;

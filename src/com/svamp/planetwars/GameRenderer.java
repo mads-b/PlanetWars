@@ -3,17 +3,16 @@ package com.svamp.planetwars;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
 import android.opengl.Matrix;
 import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import com.svamp.planetwars.math.Vector;
-import com.svamp.planetwars.sprite.AbstractSprite;
+import com.svamp.planetwars.sprite.AbstractLineSprite;
+import com.svamp.planetwars.sprite.AbstractSquareSprite;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-import java.util.Arrays;
 
 class GameRenderer implements GLSurfaceView.Renderer {
     private GameEngine gEngine;
@@ -26,7 +25,8 @@ class GameRenderer implements GLSurfaceView.Renderer {
 
     private float scalation;
 
-    private static final String TAG = "com.svamp.GameRenderer";
+    private static final String TAG = GameRenderer.class.getCanonicalName();
+
     //Time between updates, in seconds.
     private static final long UPDATE_INTERVAL_MS = 70;
     private long startTime = System.currentTimeMillis();
@@ -52,6 +52,10 @@ class GameRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0f,0f,0f,0f);
         Log.d(TAG, "SurfaceCreated.");
         Matrix.setLookAtM(viewMatrix, 0, 0, 0f, 2.5f, 0, 0f, 0, 0f, 1f, 0);
+
+        /* Initialize Shaders for sprites here: */
+        AbstractSquareSprite.initShaders(gl);
+        AbstractLineSprite.initShaders(gl);
     }
 
     @Override
@@ -65,8 +69,6 @@ class GameRenderer implements GLSurfaceView.Renderer {
         Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1, 1, 1f, 5f);
 
         remakePvMatrix();
-        // Preload all shaders.
-        AbstractSprite.initShaders(context);
     }
 
     @Override
@@ -81,9 +83,9 @@ class GameRenderer implements GLSurfaceView.Renderer {
             } catch (InterruptedException ignored) { }
         startTime = System.currentTimeMillis();
 
-        GLES20.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         gEngine.update(dt/1000f);
-        gEngine.draw(pvMatrix);
+        gEngine.draw(gl, pvMatrix);
     }
 
 

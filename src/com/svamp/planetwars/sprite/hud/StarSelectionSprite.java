@@ -1,18 +1,18 @@
 package com.svamp.planetwars.sprite.hud;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import com.svamp.planetwars.Fleet;
-import com.svamp.planetwars.sprite.AbstractSprite;
+import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.StarSprite;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * This class represents the "profile" image of a star, shown in the HUD.
  * It wraps a StarSprite, and uses it to draw.
  */
-public class StarSelectionSprite extends AbstractSprite {
+public class StarSelectionSprite extends AbstractSquareSprite {
     private final static Paint numPaint = new Paint();
     private Bitmap star;
 
@@ -31,7 +31,7 @@ public class StarSelectionSprite extends AbstractSprite {
     }
 
 
-    public void draw(float[] mvcMatrix) {
+    public void draw(GL10 glUnused, float[] mvcMatrix) {
         /*
         Fleet homeFleet = realStar.getBattleField().getHomeFleet();
         c.drawRect(bounds,numPaint);

@@ -25,7 +25,7 @@ public class GameClient extends AbstractGameCommunicator {
     private final Set<Player> peers = new HashSet<Player>();
     private final List<DataPacketListener> listeners = Collections.synchronizedList(new ArrayList<DataPacketListener>());
 
-    private static final String TAG = "com.svamp.network.GameClient";
+    private static final String TAG = GameClient.class.getCanonicalName();
 
     /**
      * Constructor for the networker.

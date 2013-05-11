@@ -15,7 +15,7 @@ class SocketWriterThread extends Thread {
     private boolean running;
     private final DatagramSocket socket;
     private final BlockingQueue<DatagramPacket> packets = new LinkedBlockingQueue<DatagramPacket>();
-    private static final String TAG = "com.svamp.SocketWriterThread";
+    private static final String TAG = SocketWriterThread.class.getCanonicalName();
 
 
     public SocketWriterThread(DatagramSocket socket) {

@@ -1,6 +1,5 @@
 package com.svamp.planetwars.sprite;
 
-import android.graphics.Canvas;
 import android.graphics.RectF;
 import com.svamp.planetwars.math.Vector;
 
@@ -16,9 +15,9 @@ public class CompositeSprite implements Sprite {
     private final ArrayList<Sprite> sprites = new ArrayList<Sprite>();
 
     //Iterate over and draw all sprites inside
-    public void draw(float[] mvpMatrix) {
+    public void draw(GL10 glUnused, float[] mvpMatrix) {
         for(Sprite sprite : sprites)
-            sprite.draw(mvpMatrix);
+            sprite.draw(glUnused,mvpMatrix);
     }
     //Add sprite to collection
     public void add(Sprite sprite) {

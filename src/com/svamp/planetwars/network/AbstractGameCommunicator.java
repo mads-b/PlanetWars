@@ -22,7 +22,7 @@ public abstract class AbstractGameCommunicator {
     private SocketWriterThread writer;
 
 
-    private static final String TAG = "com.svamp.AbstractGameCommunicator";
+    private static final String TAG = AbstractGameCommunicator.class.getCanonicalName();
 
     /**
      * Constructor for the networker.

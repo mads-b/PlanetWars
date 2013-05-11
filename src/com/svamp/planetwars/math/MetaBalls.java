@@ -7,7 +7,6 @@ import com.svamp.planetwars.sprite.StarSprite;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ public class MetaBalls {
     private final static int RESOLUTION = 80;
     private MarchingSquares squares;
     public MetaBalls(RectF dimensions,Collection<StarSprite> starSprites) {
+        Log.d("com.svamp.math.MetaBalls","Making metaballs on domain "+dimensions.toShortString());
         Sphere[] spheres = new Sphere[starSprites.size()];
         int i=0;
         for(StarSprite s : starSprites) {
@@ -126,7 +126,7 @@ public class MetaBalls {
                 for(int x = 0; x<resolution; ++x){
                     //End grid elements are hardcoded for safety.
                     if(x==0 || y==0 || x==resolution-1 || y==resolution-1) {
-                        scalars[x][y] = -5;
+                        scalars[x][y] = -.05f;
                     }
                     else {
                         scalars[x][y] = func.getValue(grid[x][y], sphereSetId);

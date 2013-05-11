@@ -6,7 +6,6 @@ import com.svamp.planetwars.StarMap;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.net.SocketException;
@@ -23,7 +22,7 @@ public class GameHost extends AbstractGameCommunicator {
     private final Map<SocketAddress,Player> peers = new HashMap<SocketAddress,Player>();
 
     private final int maxClients;
-    private static final String TAG = "com.svamp.network.GameHost";
+    private static final String TAG = GameHost.class.getCanonicalName();
 
     private final StarMap starMap;
     private final ShipMap shipMap;

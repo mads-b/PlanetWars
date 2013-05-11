@@ -1,15 +1,16 @@
 package com.svamp.planetwars.sprite.hud;
 
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import com.svamp.planetwars.Hud;
-import com.svamp.planetwars.sprite.AbstractSprite;
+import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.StarSprite;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  */
-public class ButtonSprite extends AbstractSprite {
+public class ButtonSprite extends AbstractSquareSprite {
     private final Paint buttonPaint = new Paint();
     private final String buttonText;
     private final Hud hud;
@@ -27,7 +28,7 @@ public class ButtonSprite extends AbstractSprite {
     }
 
     @Override
-    public void draw(float[] mvcMatrix) {
+    public void draw(GL10 glUnused, float[] mvcMatrix) {
         //c.drawRect(bounds,buttonPaint);
         //c.drawText(buttonText,bounds.left,bounds.centerY(),buttonPaint);
     }

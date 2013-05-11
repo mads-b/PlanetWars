@@ -9,6 +9,7 @@ import com.svamp.planetwars.GameEngine;
 import com.svamp.planetwars.StarMap;
 import com.svamp.planetwars.network.Player;
 
+import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
 
 /*
@@ -16,7 +17,7 @@ import java.nio.ByteBuffer;
  * Its only variable parameter is size.
  */
 
-public class StarSprite extends AbstractSprite {
+public class StarSprite extends AbstractSquareSprite {
     private final static float STAR_DAMAGE_COEFF=0.002f;
     private final static float STAR_HP_REGEN_COEFF = 0.1f;
 
@@ -70,22 +71,10 @@ public class StarSprite extends AbstractSprite {
      * Check if sprite is in screen and draw! Recalculate from global coords to screen coords!
      */
     @Override
-    public void draw(float[] mvpMatrix) {
+    public void draw(GL10 glUnused, float[] mvpMatrix) {
+
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
-        if(glTexId == -1) glTexId = getGlTexPointer(drawableTexId);
-        // Add program to OpenGL environment
-        GLES20.glUseProgram(mProgramHandle);
-
-        // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-
-        // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(mPositionHandle, 3,
-                GLES20.GL_FLOAT, false,
-                3*4, vertexBuffer);
-
-        // Apply the projection and view transformation
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        if(glTexId == -1) glTexId = SpriteFactory.getInstance().getTextureId(glUnused,drawableTexId);
 
         // Set the active texture unit to texture unit 0.
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -97,16 +86,10 @@ public class StarSprite extends AbstractSprite {
         GLES20.glUniform1i(mTexCoordinateHandle, 0);
 
         GLES20.glEnableVertexAttribArray(mTexCoordinateHandle);
-        textureBuffer.position(0);
+
         GLES20.glVertexAttribPointer(mTexCoordinateHandle, 2, GLES20.GL_FLOAT, false,
                 0, textureBuffer);
-
-        // Draw the square
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6,
-                GLES20.GL_UNSIGNED_SHORT, drawOrderBuffer);
-
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        super.draw(glUnused,mvpMatrix);
     }
 
     @Override

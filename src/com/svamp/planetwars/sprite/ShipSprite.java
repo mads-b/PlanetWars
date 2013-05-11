@@ -1,7 +1,5 @@
 package com.svamp.planetwars.sprite;
 
-import android.graphics.Canvas;
-import android.util.Log;
 import com.svamp.planetwars.Fleet;
 import com.svamp.planetwars.ShipMap;
 import com.svamp.planetwars.math.Vector;
@@ -11,7 +9,7 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * Abstract ship representing every ship in the game.
  */
-public class ShipSprite extends AbstractSprite {
+public class ShipSprite extends AbstractSquareSprite {
     private final ShipMap shipMap;
     private final Vector speed = new Vector(0,0);
     private StarSprite dest;
@@ -20,12 +18,14 @@ public class ShipSprite extends AbstractSprite {
 
     private final static int MAX_SPEED =100; //100px/s
 
-    private final SpriteSheet spriteSheet;
+    private SpriteSheet spriteSheet;
+    private final SpriteSheetType type;
 
     public ShipSprite(ShipMap shipMap,Fleet fleet,SpriteSheetType type) {
         this.shipMap = shipMap;
         this.fleet=fleet;
-        spriteSheet = SpriteFactory.getInstance().makeSpriteSheet(type, this);
+        this.type = type;
+
         this.setSize(50, 50); //TODO: Better width calc..
     }
 
@@ -33,8 +33,9 @@ public class ShipSprite extends AbstractSprite {
     public StarSprite getDest() { return dest; }
 
     @Override
-    public void draw(float[] mvpMatrix) {
-        spriteSheet.draw(mvpMatrix);
+    public void draw(GL10 glUnused, float[] mvpMatrix) {
+        if(spriteSheet == null) spriteSheet = SpriteFactory.getInstance().makeSpriteSheet(glUnused,type, this);
+        spriteSheet.draw(glUnused, mvpMatrix);
     }
 
     public void update(float dt) {

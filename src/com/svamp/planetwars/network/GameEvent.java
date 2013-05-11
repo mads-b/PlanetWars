@@ -20,7 +20,7 @@ public class GameEvent {
 
     private byte[] payload = new byte[0];
 
-    private static final String TAG = "com.svamp.network.GameEvent";
+    private static final String TAG = GameEvent.class.getCanonicalName();
 
     /**
      * Construct GameEvent from serialized data.

@@ -1,17 +1,18 @@
 package com.svamp.planetwars.sprite.hud;
 
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import com.svamp.planetwars.Fleet;
 import com.svamp.planetwars.Hud;
 import com.svamp.planetwars.math.Vector;
-import com.svamp.planetwars.sprite.AbstractSprite;
+import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.StarSprite;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  */
-public class SliderSprite extends AbstractSprite {
+public class SliderSprite extends AbstractSquareSprite {
     protected float curVal=0;
     protected int maxVal=0;
     protected final Paint framePaint = new Paint();
@@ -34,7 +35,7 @@ public class SliderSprite extends AbstractSprite {
     }
 
     @Override
-    public void draw(float[] mvcMatrix) {
+    public void draw(GL10 glUnused, float[] mvcMatrix) {
         //c.drawRect(bounds,framePaint);
         //Number of fighters/bombers might change. Make sure we're updated.
         Fleet homeFleet = star.getBattleField().getHomeFleet();

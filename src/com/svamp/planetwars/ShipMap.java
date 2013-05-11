@@ -1,6 +1,5 @@
 package com.svamp.planetwars;
 
-import android.graphics.Canvas;
 import android.util.Log;
 import com.svamp.planetwars.network.AbstractGameCommunicator;
 import com.svamp.planetwars.network.DataPacketListener;
@@ -14,9 +13,7 @@ import com.svamp.planetwars.sprite.StarSprite;
 
 import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
-import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -28,7 +25,7 @@ public class ShipMap implements DataPacketListener {
     private final StarMap starMap;
     private AbstractGameCommunicator communicator;
 
-    private static final String TAG = "com.svamp.ShipMap";
+    private static final String TAG = ShipMap.class.getCanonicalName();
 
     public ShipMap(AbstractGameCommunicator communicator,StarMap starMap) {
         this.communicator=communicator;
@@ -36,9 +33,9 @@ public class ShipMap implements DataPacketListener {
         if(communicator instanceof GameClient) ((GameClient) communicator).registerListener(this);
     }
 
-    public void draw(float[] mvpMatrix) {
+    public void draw(GL10 glUnused, float[] mvpMatrix) {
         for(ShipSprite ship : ships) {
-            ship.draw(mvpMatrix);
+            ship.draw(glUnused, mvpMatrix);
         }
     }
     public void update(float dt) {

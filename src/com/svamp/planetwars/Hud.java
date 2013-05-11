@@ -28,7 +28,7 @@ public class Hud {
     private final Map<HudItem,Sprite> hudSprites = new HashMap<HudItem, Sprite>();
     private final GameEngine gEngine;
     private final Vector size;
-    private static final String TAG = "com.svamp.Hud";
+    private static final String TAG = Hud.class.getCanonicalName();
 
     public Hud(GameEngine gameEngine,Vector size) {
         this.gEngine = gameEngine;

@@ -1,6 +1,5 @@
 package com.svamp.planetwars.math;
 
-import android.graphics.Rect;
 import android.graphics.RectF;
 import com.svamp.planetwars.sprite.Sprite;
 

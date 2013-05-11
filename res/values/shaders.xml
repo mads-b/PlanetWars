@@ -20,4 +20,22 @@
       gl_FragColor = texture2D(texture, varTexCoordinate);
   }
   </string>
+
+  <string name="shader_line_vert">
+    uniform mat4 MVPMatrix;
+    attribute vec4 position;
+    void main()
+    {
+    gl_Position = MVPMatrix * position;
+    }
+  </string>
+  <string name="shader_line_frag">
+    precision mediump float;
+    uniform vec4 color;
+    void main()
+    {
+    gl_FragColor = color;
+    }
+  </string>
+
 </resources>

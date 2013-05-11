@@ -1,10 +1,11 @@
 package com.svamp.planetwars.sprite.hud;
 
-import android.graphics.Canvas;
 import android.graphics.Color;
 import com.svamp.planetwars.Hud;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.sprite.StarSprite;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * TODO: Javadoc!
@@ -19,7 +20,7 @@ public class BuildSelectionSprite extends SliderSprite {
     }
 
     @Override
-    public void draw(float[] mvcMatrix) {
+    public void draw(GL10 glUnused, float[] mvcMatrix) {
         /*c.drawRect(bounds,framePaint);
         c.drawRect(bounds.left+bounds.width()*Math.round(curVal)/2,
                 bounds.top,

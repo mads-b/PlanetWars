@@ -12,7 +12,7 @@ class SocketReaderThread extends Thread {
     private boolean running;
     private final DatagramSocket socket;
     private final AbstractGameCommunicator receiver;
-    private static final String TAG = "com.svamp.SocketReaderThread";
+    private static final String TAG = SocketReaderThread.class.getCanonicalName();
 
     public SocketReaderThread(DatagramSocket socket,AbstractGameCommunicator receiver) {
         this.socket=socket;

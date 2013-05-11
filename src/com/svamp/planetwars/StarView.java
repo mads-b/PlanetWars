@@ -22,7 +22,7 @@ public class StarView extends GLSurfaceView implements TouchCallback {
 
     private TouchHandler touchHandler = new TouchHandler(this);
 
-    private static final String TAG = "com.svamp.GameRenderer";
+    private static final String TAG = GameRenderer.class.getCanonicalName();
 
     public StarView(Context context) {
         super(context);
@@ -38,6 +38,7 @@ public class StarView extends GLSurfaceView implements TouchCallback {
     void initView(GameClient communicator){
         // Create an OpenGL ES 2.0 context
         setEGLContextClientVersion(2);
+
 
         //initialize our game engine, send along pointer to this player.
         gEngine = new GameEngine(communicator);
