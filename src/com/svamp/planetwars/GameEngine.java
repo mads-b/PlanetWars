@@ -1,6 +1,7 @@
 package com.svamp.planetwars;
 
 import android.content.res.Resources;
+import android.util.Log;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.network.DataPacketListener;
 import com.svamp.planetwars.network.GameClient;
@@ -76,9 +77,9 @@ public class GameEngine implements DataPacketListener {
      * @param pos Position vector in world coordinates.
      */
     public void touched(Vector pos) {
-        if(hud.touch(pos)) return; //HUD touched?
         StarSprite star = starMap.getStarAtPosition(pos);
         if(star==null) return;
+        Log.d(GameEngine.class.getCanonicalName(),"Selected star: "+star.toString()+" owned by: "+star.getOwnership().getPlayerName());
         if(lastSelectedTarget!=null) lastSelectedTarget.setSelected(false,false);
         lastSelectedTarget = star;
         lastSelectedTarget.setSelected(true,false);
@@ -90,7 +91,6 @@ public class GameEngine implements DataPacketListener {
      * @param pos Position vector in world coordinates.
      */
     public void longTouched(Vector pos) {
-        if(hud.touch(pos)) return;  //HUD touched?
         StarSprite star = starMap.getStarAtPosition(pos);
         if(star==null) return;
         if(lastSelectedSource!=null) lastSelectedSource.setSelected(false,false);

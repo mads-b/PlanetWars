@@ -10,7 +10,7 @@ import java.util.Comparator;
 public class Player implements ByteSerializeable,Comparator<Player> {
     private int uniqueID = (int) (Integer.MAX_VALUE*Math.random());
 
-    private byte playerNum=0;
+    private byte playerNum=1;
     private String userName = "Tony Stark";
     //Helper field used by gameHost. not for internal use.
     public boolean gameStartRequested=false;
@@ -85,6 +85,10 @@ public class Player implements ByteSerializeable,Comparator<Player> {
 
     public int getElementHash() {
         return uniqueID;
+    }
+
+    public String getPlayerName() {
+        return userName;
     }
 
     @Override

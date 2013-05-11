@@ -186,10 +186,10 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
     public void setSpawns(Collection<Player> players) {
         float angle = (float) (2*Math.PI/players.size());
         Vector pos = new Vector(0,MAX_RADIUS);
-        Vector origin = new Vector(0,0);
         for(Player p : players) {
             Fleet home = new Fleet(p,(short)20,(short)20);
-            StarSprite spawn = stars.getClosest(Vector.sum(origin, pos),MAX_RADIUS);
+            StarSprite spawn = stars.getClosest(pos,MAX_RADIUS);
+            Log.d(TAG,"Set spawn for "+p.getPlayerName()+" spawn at: "+spawn.getBounds().centerX()+" X "+spawn.getBounds().centerY());
             spawn.getBattleField().setHomeFleet(home);
             pos.rotate(angle);
         }
@@ -320,9 +320,11 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
 
             MetaBalls metaBalls = new MetaBalls(blobBound,stars);
             int i=0;
+            Log.d(TAG,"There are "+GameEngine.getPlayers().size()+" players in this blob generation (and "+stars.size()+" stars)");
             for(Player p : GameEngine.getPlayers()) {
                 Collection<List<Vector>> userBlobs = metaBalls.getBlobsFor(p);
                 for(List<Vector> path : userBlobs) {
+                    Log.d(TAG,"Blob for: "+p.getPlayerName()+" has "+path.size()+"Vertices");
                     newBlobs.add(new BlobSprite(path, colors[i]));
                 }
                 i++;

@@ -33,7 +33,7 @@ public class BattleField implements ByteSerializeable {
 
 
     public BattleField(StarSprite star) {
-        short five =5;
+        short five = 5;
         this.homeFleet = new Fleet(Player.getNeutral(),five,five);
         this.star = star;
     }

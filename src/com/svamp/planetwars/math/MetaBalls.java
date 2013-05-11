@@ -21,7 +21,7 @@ public class MetaBalls {
         for(StarSprite s : starSprites) {
             spheres[i] = new Sphere(
                     new Vector(s.getBounds().centerX(),s.getBounds().centerY()),
-                    s.getAttack()*100,
+                    s.getBounds().height(),
                     s.getOwnership().getElementHash());
             i++;
         }
@@ -30,8 +30,8 @@ public class MetaBalls {
 
     public Collection<List<Vector>> getBlobsFor(Player p) {
         long start = System.currentTimeMillis();
-        Collection<List<Vector>> result = squares.computeLines(0.02f,p.getElementHash());
-        Log.d("com.svamp.math.MetaBalls","Computed new set in "+(System.currentTimeMillis()-start)+"ms.");
+        Collection<List<Vector>> result = squares.computeLines(0.2f,p.getElementHash());
+        Log.d("com.svamp.math.MetaBalls","Computed blobs for "+p.getPlayerName()+" in "+(System.currentTimeMillis()-start)+"ms.");
         return result;
     }
 
@@ -47,7 +47,7 @@ public class MetaBalls {
     }
 
     private class PowerFunction {
-        private final static float EPSILON = 1/1024f;
+        private final static float EPSILON = 10e-6f;
         private Sphere[] spheres;
         private PowerFunction(Sphere[] spheres) {
             this.spheres=spheres;
@@ -126,7 +126,7 @@ public class MetaBalls {
                 for(int x = 0; x<resolution; ++x){
                     //End grid elements are hardcoded for safety.
                     if(x==0 || y==0 || x==resolution-1 || y==resolution-1) {
-                        scalars[x][y] = -.05f;
+                        scalars[x][y] = 0;
                     }
                     else {
                         scalars[x][y] = func.getValue(grid[x][y], sphereSetId);
@@ -223,7 +223,7 @@ public class MetaBalls {
         private Vector lerp(float isoValue, Vector p0, Vector p1,float sv0, float sv1) {
             float mu;
             Vector p = new Vector(0,0);
-            float epsilon = 1/65536f;
+            float epsilon = 10e-6f;
             if(Math.abs(isoValue-sv0) < epsilon)
                 return p0;
             if(Math.abs(isoValue-sv1) < epsilon)
