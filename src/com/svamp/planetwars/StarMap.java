@@ -1,9 +1,8 @@
 package com.svamp.planetwars;
 
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
-import android.graphics.Paint;
 import android.graphics.RectF;
+import android.opengl.GLES20;
 import android.util.Log;
 import android.util.SparseArray;
 import com.svamp.planetwars.math.MetaBalls;
@@ -51,20 +50,14 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
 
     private static final String TAG = StarMap.class.getCanonicalName();
 
-    private final static Paint pathPaint = new Paint();
-
     public StarMap(GameClient client) {
         client.registerListener(this);
-        pathPaint.setColor(Color.argb(128, 0, 90, 4));
-        pathPaint.setStyle(Paint.Style.STROKE);
-        //pathPaint.setPathEffect(new CornerPathEffect(50));
-        pathPaint.setPathEffect(new DashPathEffect(new float[] {30,10},0));
-        pathPaint.setStrokeWidth(20);
     }
     //Internal constructor.
     private StarMap() {}
 
     public void draw(GL10 glUnused, float[] mvpMatrix) {
+        GLES20.glUseProgram(BlobSprite.getProgramHandle());
         for(Sprite s : blobs) {
             s.draw(glUnused, mvpMatrix);
         }
@@ -73,6 +66,7 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
         //    visibleStars = stars.queryRange(canvas.getClipBounds());
          //   rebuildStarList=false;
         //}
+        GLES20.glUseProgram(StarSprite.getProgramHandle());
         for(Sprite ss : stars)
             ss.draw(glUnused, mvpMatrix);
     }
@@ -324,7 +318,6 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
             for(Player p : GameEngine.getPlayers()) {
                 Collection<List<Vector>> userBlobs = metaBalls.getBlobsFor(p);
                 for(List<Vector> path : userBlobs) {
-                    Log.d(TAG,"Blob for: "+p.getPlayerName()+" has "+path.size()+"Vertices");
                     newBlobs.add(new BlobSprite(path, colors[i]));
                 }
                 i++;

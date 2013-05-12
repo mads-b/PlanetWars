@@ -2,7 +2,6 @@ package com.svamp.planetwars.sprite.hud;
 
 import android.graphics.Color;
 import android.graphics.Paint;
-import com.svamp.planetwars.Hud;
 import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.StarSprite;
 

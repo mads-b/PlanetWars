@@ -9,6 +9,7 @@ import com.svamp.planetwars.network.GameEvent;
 import com.svamp.planetwars.network.PackageHeader;
 import com.svamp.planetwars.network.Player;
 import com.svamp.planetwars.sprite.StarSprite;
+import com.svamp.planetwars.sprite.hud.Hud;
 
 import javax.microedition.khronos.opengles.GL10;
 import java.util.Collection;
@@ -39,15 +40,13 @@ public class GameEngine implements DataPacketListener {
         //Make GameEngine receive game events
         communicator.registerListener(this);
         this.communicator=communicator;
-    }
-
-    public void init(Resources resources) {
+        //Build game
         starMap = new StarMap(communicator);
         shipMap = new ShipMap(communicator,starMap);
 
-        hud = new Hud(this,
-                new Vector(resources.getDisplayMetrics().widthPixels*0.25f,
-                        resources.getDisplayMetrics().heightPixels));
+        hud = new Hud(this);
+        //Hud is 30% of horizontal size, 100% of vertical size.
+        hud.setSize(.6f,2);
         //Request map:
         GameEvent event = new GameEvent(PackageHeader.REQUEST_MAP,curPlayer);
         communicator.sendData(event.toByteArray());
@@ -69,11 +68,11 @@ public class GameEngine implements DataPacketListener {
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         starMap.draw(glUnused, mvpMatrix);
         shipMap.draw(glUnused, mvpMatrix);
-        //hud.draw();
+        hud.draw(glUnused, mvpMatrix);
     }
 
     /**
-     * Callback from TouchHandler, click. Set the star clicked to "target"
+     * Click. Set the star clicked to "target"
      * @param pos Position vector in world coordinates.
      */
     public void touched(Vector pos) {
@@ -87,7 +86,7 @@ public class GameEngine implements DataPacketListener {
     }
 
     /**
-     * Callback from TouchHandler, long press. Set the star long clicked to "source"
+     * Long press. Set the star long clicked to "source"
      * @param pos Position vector in world coordinates.
      */
     public void longTouched(Vector pos) {
@@ -97,6 +96,16 @@ public class GameEngine implements DataPacketListener {
         lastSelectedSource = star;
         lastSelectedSource.setSelected(true,true);
         hud.selectionChanged();
+    }
+
+    /**
+     * Drag action. Permutes HUD if a slider was hit.
+     * @param start Start point. Screen [-1,1] coordinates.
+     * @param dist Distance travelled. Screen [-1,1] coordinates
+     * @return True if something in the HUD was touched, false otherwise.
+     */
+    public boolean move(Vector start, Vector dist) {
+        return hud.move(start,dist);
     }
 
     public StarSprite getLastSelectedSource() { return lastSelectedSource; }

@@ -69,6 +69,16 @@ public abstract class AbstractLineSprite extends AbstractSprite {
         Log.d(TAG, "errors:" + GLES20.glGetProgramInfoLog(mProgramHandle) + GLES20.glGetShaderInfoLog(vertexShaderHandle) + GLES20.glGetShaderInfoLog(fragmentShaderHandle));
     }
 
+    /**
+     * Fetches the program handle for this sprite
+     * @return The shader program handle for this class of sprite.
+     * @throws IllegalStateException if the program handle is attempted accessed prior to it being created.
+     */
+    public static int getProgramHandle() {
+        if(mProgramHandle == -1) throw new IllegalStateException("Error! Shaders and program not initialized!");
+        return mProgramHandle;
+    }
+
     @Override
     protected void updateVertices() {
         //TODO: This class is atomic as of now. Might change.

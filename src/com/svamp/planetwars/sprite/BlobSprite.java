@@ -23,8 +23,6 @@ public class BlobSprite extends AbstractLineSprite {
 
     @Override
     public void draw(GL10 glUnused, float[] mvpMatrix) {
-        // Add program to OpenGL environment
-        GLES20.glUseProgram(mProgramHandle);
         //Apply color!
         GLES20.glUniform4f(mColorHandle,color[0],color[1],color[2],color[3]);
         // Draw vertices.

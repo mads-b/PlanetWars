@@ -30,7 +30,7 @@ public abstract class AbstractSprite implements Sprite,ByteSerializeable {
     }
 
     public void setSize(float width, float height) {
-        this.bounds.set(bounds.left, bounds.top, bounds.left+width, bounds.top+height);
+        this.bounds.set(bounds.left, bounds.top-height, bounds.left+width, bounds.top);
         updateVertices();
     }
 

@@ -89,14 +89,14 @@ class GameRenderer implements GLSurfaceView.Renderer {
     public void move(Vector start, Vector dist) {
         Vector end = new Vector(start);
         end.add(dist.x, dist.y);
-        scaleToGameCoords(start);
-        scaleToGameCoords(end);
+        scaleToWorldCoords(start);
+        scaleToWorldCoords(end);
         Matrix.translateM(viewMatrix,0,end.x-start.x,end.y-start.y,0);
         remakePvMatrix();
     }
 
     public void scale(Vector center, float degree) {
-        scaleToGameCoords(center);
+        scaleToWorldCoords(center);
         Matrix.translateM(viewMatrix,0,center.x,center.y,0);
         Matrix.scaleM(viewMatrix,0,degree,degree,degree);
         Matrix.translateM(viewMatrix,0,-center.x,-center.y,0);
@@ -107,10 +107,10 @@ class GameRenderer implements GLSurfaceView.Renderer {
     private final float[] tmp = new float[4];
     private final float[] tmp2 = new float[4];
     /**
-     * Scale screen coords to game coords using the VP matrix.
+     * Scale screen coords to world coords using the VP matrix.
      * @param pos Screen coords to scale. Float array of length 4.
      */
-    public void scaleToGameCoords(Vector pos) {
+    public void scaleToWorldCoords(Vector pos) {
         tmp[0] = tmp2[0] = 2*pos.x/screendims.x-1;
         tmp[1] = tmp2[1] = 1-2*pos.y/screendims.y;
         tmp[3] = tmp2[3] = 1;
@@ -129,6 +129,18 @@ class GameRenderer implements GLSurfaceView.Renderer {
         //Compute where the line through these two points intersect the z=0 plane:
         float t = tmp[2]/(tmp[2]-tmp2[2]);
         pos.set(tmp[0]+t*(tmp2[0]-tmp[0]),tmp[1]+t*(tmp2[1]-tmp[1]));
+    }
+
+    /**
+     * Scales the vector from screen pixel coordinates to OpenGL [-1,1] domain coordinates.
+     * @param pos Position to scale.
+     */
+    public void scaleToGlCoords(Vector pos) {
+        pos.set(2*pos.x/screendims.x-1,1-2*pos.y/screendims.y);
+    }
+
+    public void scaleToScreenCoords(Vector pos) {
+        pos.set(screendims.x*(pos.x+1)/2,screendims.y*(1-pos.y)/2);
     }
 
     private void remakePvMatrix() {

@@ -1,6 +1,7 @@
 package com.svamp.planetwars;
 
 import android.util.FloatMath;
+import android.util.Log;
 import android.view.MotionEvent;
 import com.svamp.planetwars.math.TouchCallback;
 import com.svamp.planetwars.math.Vector;
@@ -68,7 +69,7 @@ class TouchHandler {
                 if (mode == DRAG) {
                     //Inform gEngine of motion since last message.
                     tmp.set(event.getX()-motion.x-start.x,event.getY()-motion.y-start.y);
-                    callback.move(start,tmp);
+                    callback.move(new Vector(start),new Vector(tmp));
                     //Register grand total moved.
                     motion.set(event.getX() - start.x, event.getY() - start.y);
 

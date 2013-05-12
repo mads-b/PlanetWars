@@ -24,8 +24,6 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
      * and also initializing eventual textures and other info.
      */
     public void draw(GL10 glUnused, float[] mvpMatrix) {
-        if(mProgramHandle == -1) throw new IllegalStateException("Error! Initialize the shaders for this class!");
-
         // Enable a handle to the triangle vertices
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
@@ -53,15 +51,15 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
 
     private final FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(12 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
     private final ShortBuffer drawOrderBuffer = ByteBuffer.allocateDirect(12).order(ByteOrder.nativeOrder()).asShortBuffer().put(drawOrder);
-    final FloatBuffer textureBuffer = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(textureOrder);
+    protected final FloatBuffer textureBuffer = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(textureOrder);
     protected void updateVertices() {
         drawOrderBuffer.rewind();
         textureBuffer.rewind();
         vertexBuffer
-                .put(bounds.left).put(bounds.top).put(0)
                 .put(bounds.left).put(bounds.bottom).put(0)
-                .put(bounds.right).put(bounds.bottom).put(0)
-                .put(bounds.right).put(bounds.top).put(0);
+                .put(bounds.left).put(bounds.top).put(0)
+                .put(bounds.right).put(bounds.top).put(0)
+                .put(bounds.right).put(bounds.bottom).put(0);
         vertexBuffer.rewind();
     }
 
@@ -70,8 +68,8 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
     private static int mMVPMatrixHandle;
     /** This will be used to pass in model position information. */
     private static int mPositionHandle;
-    static int mProgramHandle = -1;
-    static int mTexCoordinateHandle;
+    protected static int mProgramHandle = -1;
+    protected static int mTexCoordinateHandle;
 
     /**
      * Creates a program with a vertex and a frag shader.
@@ -88,5 +86,15 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
         mTexCoordinateHandle = GLES20.glGetAttribLocation(mProgramHandle,"texCoordinate");
 
         Log.d(TAG, "errors:" + GLES20.glGetProgramInfoLog(mProgramHandle) + GLES20.glGetShaderInfoLog(vertexShaderHandle) + GLES20.glGetShaderInfoLog(fragmentShaderHandle));
+    }
+
+    /**
+     * Fetches the program handle for this sprite
+     * @return The shader program handle for this class of sprite.
+     * @throws IllegalStateException if the program handle is attempted accessed prior to it being created.
+     */
+    public static int getProgramHandle() {
+        if(mProgramHandle == -1) throw new IllegalStateException("Error! Shaders and program not initialized!");
+        return mProgramHandle;
     }
 }

@@ -74,9 +74,6 @@ public class StarSprite extends AbstractSquareSprite {
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
         if(glTexId == -1) glTexId = SpriteFactory.getInstance().getTextureId(glUnused,drawableTexId);
-        // Add program to OpenGL environment
-        GLES20.glUseProgram(mProgramHandle);
-
         // Set the active texture unit to texture unit 0.
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 

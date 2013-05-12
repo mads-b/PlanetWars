@@ -22,7 +22,7 @@ public class StarView extends GLSurfaceView implements TouchCallback {
 
     private final TouchHandler touchHandler = new TouchHandler(this);
 
-    private static final String TAG = GameRenderer.class.getCanonicalName();
+    private static final String TAG = StarView.class.getCanonicalName();
 
     public StarView(Context context) {
         super(context);
@@ -42,7 +42,6 @@ public class StarView extends GLSurfaceView implements TouchCallback {
 
         //initialize our game engine, send along pointer to this player.
         gEngine = new GameEngine(communicator);
-        gEngine.init(context.getResources());
 
         //initialize our Thread class.
         renderer = new GameRenderer(getHolder(), new Handler(), gEngine);
@@ -64,21 +63,30 @@ public class StarView extends GLSurfaceView implements TouchCallback {
      */
     @Override
     public void touched(Vector pos) {
-        renderer.scaleToGameCoords(pos);
+        renderer.scaleToWorldCoords(pos);
         Log.d(TAG, "Touched z=0 plane at "+pos);
         gEngine.touched(pos);
     }
 
     @Override
     public void longTouched(Vector pos) {
-        renderer.scaleToGameCoords(pos);
+        renderer.scaleToWorldCoords(pos);
         Log.d(TAG, "LongTouched z=0 plane at "+pos);
         gEngine.longTouched(pos);
     }
 
     @Override
     public void move(Vector start, Vector dist) {
-        renderer.move(start, dist);
+        //Two point case: Check if something moved on the HUD, move map otherwise.
+        renderer.scaleToGlCoords(start);
+        renderer.scaleToGlCoords(dist);
+        if(!gEngine.move(start,dist)) {
+            //No HUD modify. Convert pos back into screen pixel coords.
+            renderer.scaleToScreenCoords(start);
+            renderer.scaleToScreenCoords(dist);
+            renderer.move(start, dist);
+        }
+
     }
 
     @Override
