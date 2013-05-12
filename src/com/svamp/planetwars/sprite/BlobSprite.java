@@ -3,6 +3,7 @@ package com.svamp.planetwars.sprite;
 import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
+import com.svamp.planetwars.R;
 import com.svamp.planetwars.math.Vector;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -11,7 +12,7 @@ import java.util.Collection;
 
 
 public class BlobSprite extends AbstractLineSprite {
-    protected float[] color = new float[4];
+    private float[] color = new float[4];
 
     private static final String TAG = BlobSprite.class.getCanonicalName();
 

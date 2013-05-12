@@ -26,7 +26,7 @@
     attribute vec4 position;
     void main()
     {
-    gl_Position = MVPMatrix * position;
+      gl_Position = MVPMatrix * position;
     }
   </string>
   <string name="shader_line_frag">
@@ -34,7 +34,7 @@
     uniform vec4 color;
     void main()
     {
-    gl_FragColor = color;
+      gl_FragColor = color;
     }
   </string>
 

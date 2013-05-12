@@ -14,6 +14,7 @@ import com.svamp.planetwars.sprite.hud.ButtonSprite;
 import com.svamp.planetwars.sprite.hud.SliderSprite;
 import com.svamp.planetwars.sprite.hud.StarSelectionSprite;
 
+import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +23,6 @@ import java.util.Map;
  * Heads-up-display for game. Used by gameEngine.
  */
 public class Hud {
-    private static final Paint background = new Paint();
-    private static final Paint topText = new Paint();
 
     private final Map<HudItem,Sprite> hudSprites = new HashMap<HudItem, Sprite>();
     private final GameEngine gEngine;
@@ -33,31 +32,11 @@ public class Hud {
     public Hud(GameEngine gameEngine,Vector size) {
         this.gEngine = gameEngine;
         this.size=size;
-        background.setColor(Color.DKGRAY);
-        background.setStyle(Paint.Style.FILL);
-        topText.setColor(Color.BLUE);
-        topText.setTextSize(20);
         Log.d(TAG,"Hud size:"+size.x+"x"+size.y);
-
-
     }
 
-    public synchronized void draw(Canvas c) {
-        c.drawRect(0,0,size.x,size.y,background);
-        for(Sprite sprite : hudSprites.values()) {
-            //sprite.draw(c);
-        }
+    public void draw(GL10 glUnused, float[] mvpMatrix) {
 
-        StarSprite source = gEngine.getLastSelectedSource();
-        StarSprite target = gEngine.getLastSelectedTarget();
-        if(source!=null) {
-            c.drawText(source.getOwnershipDesc(),size.x*0.35f,size.x*0.10f,topText);
-            c.drawText(source.getStatus(source),size.x*0.35f,size.x*0.20f,topText);
-        }
-        if(target!=null) {
-            c.drawText(target.getOwnershipDesc(),10,size.y-size.x*0.15f,topText);
-            c.drawText(target.getStatus(target),10,size.y-size.x*0.05f,topText);
-        }
     }
 
 
