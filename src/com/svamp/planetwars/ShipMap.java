@@ -23,7 +23,7 @@ public class ShipMap implements DataPacketListener {
     //Thread safe set. RLY SLOW! todo: learn thread safety so we can do better.
     private final Set<ShipSprite> ships = new CopyOnWriteArraySet<ShipSprite>();
     private final StarMap starMap;
-    private AbstractGameCommunicator communicator;
+    private final AbstractGameCommunicator communicator;
 
     private static final String TAG = ShipMap.class.getCanonicalName();
 

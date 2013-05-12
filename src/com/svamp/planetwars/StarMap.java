@@ -26,9 +26,9 @@ import java.util.List;
 
 public class StarMap implements ByteSerializeable,DataPacketListener {
     //Complete set of stars on map.
-    private QuadTree<StarSprite> stars = new QuadTree<StarSprite>(new RectF(-MAX_RADIUS,-MAX_RADIUS,MAX_RADIUS,MAX_RADIUS),null);
+    private final QuadTree<StarSprite> stars = new QuadTree<StarSprite>(new RectF(-MAX_RADIUS,-MAX_RADIUS,MAX_RADIUS,MAX_RADIUS),null);
     //Cheat/hack to allow for quick lookup of stars by their hash.
-    private SparseArray<StarSprite> starsMap = new SparseArray<StarSprite>();
+    private final SparseArray<StarSprite> starsMap = new SparseArray<StarSprite>();
     //Subset of stars present in screen.
     private List<StarSprite> visibleStars = new ArrayList<StarSprite>();
     //Instruction to remake the list of visible stars.
@@ -96,7 +96,7 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
         return starsMap.get(hash);
     }
 
-    public void viewPortChanged() {
+    void viewPortChanged() {
         rebuildStarList=true;
     }
 

@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
-import android.util.SparseArray;
+import android.util.SparseIntArray;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -19,7 +19,7 @@ public class SpriteFactory {
     private static final SpriteFactory instance = new SpriteFactory();
     private Resources res;
     //Map from R.drawable resources to OpenGL texture reference.
-    private final SparseArray<Integer> cache = new SparseArray<Integer>();
+    private final SparseIntArray cache = new SparseIntArray();
 
     private final static String TAG = SpriteFactory.class.getCanonicalName();
 

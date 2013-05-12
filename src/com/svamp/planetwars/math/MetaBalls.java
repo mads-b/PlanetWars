@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class MetaBalls {
     private final static int RESOLUTION = 80;
-    private MarchingSquares squares;
+    private final MarchingSquares squares;
     public MetaBalls(RectF dimensions,Collection<StarSprite> starSprites) {
         Log.d("com.svamp.math.MetaBalls","Making metaballs on domain "+dimensions.toShortString());
         Sphere[] spheres = new Sphere[starSprites.size()];
@@ -36,9 +36,9 @@ public class MetaBalls {
     }
 
     private class Sphere {
-        private Vector origin;
-        private float radius;
-        private int setID;
+        private final Vector origin;
+        private final float radius;
+        private final int setID;
         private Sphere(Vector origin, float radius,int setID) {
             this.origin=origin;
             this.radius=radius;
@@ -48,7 +48,7 @@ public class MetaBalls {
 
     private class PowerFunction {
         private final static float EPSILON = 10e-6f;
-        private Sphere[] spheres;
+        private final Sphere[] spheres;
         private PowerFunction(Sphere[] spheres) {
             this.spheres=spheres;
         }
@@ -69,17 +69,17 @@ public class MetaBalls {
     }
 
     private class MarchingSquares {
-        private PowerFunction func;
-        private int resolution;
-        private Vector[][] grid;
-        private float[][] scalars;
-        private int[] edgeTable = {
+        private final PowerFunction func;
+        private final int resolution;
+        private final Vector[][] grid;
+        private final float[][] scalars;
+        private final int[] edgeTable = {
                 0x0, 0x5, 0x3, 0x6,
                 0xC, 0x9, 0xF, 0xA,
                 0xA, 0xF, 0x9, 0xC,
                 0x6, 0x3, 0x5, 0x0
         };
-        private int[][] lineTable = {
+        private final int[][] lineTable = {
                 {-1, -1, -1, -1, -1}, /*       0 nothing */
                 { 4,  6, -1, -1, -1}, /*       1 inside */
                 { 5,  4, -1, -1, -1}, /*       2 inside */

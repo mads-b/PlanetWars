@@ -43,8 +43,8 @@ public class ShaderTool {
      * @return Shader handle
      */
     public static int loadShader(GL10 glUnused, int shaderType, int sourceResource) {
-        String source = resources.getString(sourceResource);
         if(resources==null) throw new IllegalStateException("Error! The shaderTool has not been initialized!");
+        String source = resources.getString(sourceResource);
         int shader = GLES20.glCreateShader(shaderType);
         if (shader != 0) {
             GLES20.glShaderSource(shader, source);

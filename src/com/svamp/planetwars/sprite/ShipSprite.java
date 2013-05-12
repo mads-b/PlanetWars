@@ -13,7 +13,7 @@ public class ShipSprite extends AbstractSquareSprite {
     private final ShipMap shipMap;
     private final Vector speed = new Vector(0,0);
     private StarSprite dest;
-    private Fleet fleet;
+    private final Fleet fleet;
 
 
     private final static int MAX_SPEED =100; //100px/s

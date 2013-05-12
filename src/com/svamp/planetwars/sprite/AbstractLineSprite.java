@@ -20,7 +20,7 @@ public abstract class AbstractLineSprite extends AbstractSprite {
     private final int size;
     private final FloatBuffer vertexBuffer;
 
-    public AbstractLineSprite(Collection<Vector> line) {
+    AbstractLineSprite(Collection<Vector> line) {
         this.size = line.size();
         vertexBuffer = ByteBuffer.allocateDirect(size * 2 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
         for(Vector v : line) {
@@ -32,23 +32,25 @@ public abstract class AbstractLineSprite extends AbstractSprite {
 
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         if(mProgramHandle == -1) throw new IllegalStateException("Error! Initialize the shaders for this class!");
-
+        //Handle to line positions
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
         //Prepare line coordinate data
         GLES20.glVertexAttribPointer(0,2,GLES20.GL_FLOAT,false,0,vertexBuffer);
         //Draw lines:
         GLES20.glDrawArrays(GLES20.GL_LINE_STRIP,0,size);
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-
+        // Disable vertex array
+        GLES20.glDisableVertexAttribArray(mPositionHandle);
     }
 
 
     /** This will be used to pass in the transformation matrix. */
     private static int mMVPMatrixHandle;
     /** This will be used to pass in model position information. */
-    protected static int mPositionHandle;
-    protected static int mProgramHandle = -1;
-    protected static int mColorHandle;
+    private static int mPositionHandle;
+    static int mProgramHandle = -1;
+    static int mColorHandle;
 
     /**
      * Creates a program with a vertex and a frag shader.

@@ -5,7 +5,7 @@ import android.view.MotionEvent;
 import com.svamp.planetwars.math.TouchCallback;
 import com.svamp.planetwars.math.Vector;
 
-public class TouchHandler {
+class TouchHandler {
     //Maximum time in ms a touch can last. All gestures lasting less than this will be interpreted as a touch
     private final static int TOUCH_MAX_TIME_DOWN_MS =300;
     //Store instance of starView for touch callback

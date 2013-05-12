@@ -20,7 +20,7 @@ public class StarView extends GLSurfaceView implements TouchCallback {
     //our Thread class which houses the game loop
     private GameRenderer renderer;
 
-    private TouchHandler touchHandler = new TouchHandler(this);
+    private final TouchHandler touchHandler = new TouchHandler(this);
 
     private static final String TAG = GameRenderer.class.getCanonicalName();
 
@@ -45,7 +45,7 @@ public class StarView extends GLSurfaceView implements TouchCallback {
         gEngine.init(context.getResources());
 
         //initialize our Thread class.
-        renderer = new GameRenderer(getHolder(), context, new Handler(), gEngine);
+        renderer = new GameRenderer(getHolder(), new Handler(), gEngine);
         setRenderer(renderer);
         // Render the view only when there is a change in the drawing data
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);

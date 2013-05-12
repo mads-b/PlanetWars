@@ -1,6 +1,5 @@
 package com.svamp.planetwars;
 
-import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -14,14 +13,14 @@ import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+@SuppressWarnings("ALL")
 class GameRenderer implements GLSurfaceView.Renderer {
-    private GameEngine gEngine;
-    private Context context;
-    private float[] projMatrix = new float[16];
-    private float[] viewMatrix = new float[16];
-    private float[] pvMatrix = new float[16];
-    private float[] pvMatrixInverse = new float[16];
-    private Vector screendims = new Vector(0,0);
+    private final GameEngine gEngine;
+    private final float[] projMatrix = new float[16];
+    private final float[] viewMatrix = new float[16];
+    private final float[] pvMatrix = new float[16];
+    private final float[] pvMatrixInverse = new float[16];
+    private final Vector screendims = new Vector(0,0);
 
     private float scalation;
 
@@ -33,12 +32,10 @@ class GameRenderer implements GLSurfaceView.Renderer {
 
     //state of game (Running or Paused).
     int state = RUNNING;
-    public final static int RUNNING = 1;
+    private final static int RUNNING = 1;
     public final static int STOPPED = 2;
 
-    public GameRenderer(SurfaceHolder surfaceHolder, Context context, Handler handler, GameEngine gEngine) {
-        //data about the screen
-        this.context = context;
+    public GameRenderer(SurfaceHolder surfaceHolder, Handler handler, GameEngine gEngine) {
         this.gEngine = gEngine;
         Log.d(TAG,"GameRenderer instantiated.");
     }
@@ -107,8 +104,8 @@ class GameRenderer implements GLSurfaceView.Renderer {
     }
 
 
-    private float[] tmp = new float[4];
-    private float[] tmp2 = new float[4];
+    private final float[] tmp = new float[4];
+    private final float[] tmp2 = new float[4];
     /**
      * Scale screen coords to game coords using the VP matrix.
      * @param pos Screen coords to scale. Float array of length 4.

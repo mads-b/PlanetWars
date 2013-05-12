@@ -1,8 +1,5 @@
 package com.svamp.planetwars;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.util.Log;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.network.GameEvent;
