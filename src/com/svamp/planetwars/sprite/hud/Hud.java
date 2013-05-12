@@ -35,12 +35,16 @@ public class Hud extends AbstractSquareSprite {
     public Hud(GameEngine gameEngine) {
         this.gEngine = gameEngine;
         Matrix.setIdentityM(identityMatrix,0);
-        setPos(-1,1);
+        setPos(-1,-1);
+        Log.d(TAG, "HUD bounds: "+bounds.toShortString());
     }
 
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
-        if(glTexId == -1) glTexId = SpriteFactory.getInstance().getTextureId(glUnused, R.drawable.planetwars_hud);
+        if(glTexId == -1) {
+            glTexId = SpriteFactory.getInstance()
+                    .getTextureId(glUnused, R.drawable.planetwars_hud, GLES20.GL_CLAMP_TO_EDGE);
+        }
         GLES20.glUseProgram(getProgramHandle());
 
         // Set the active texture unit to texture unit 0.
@@ -61,8 +65,10 @@ public class Hud extends AbstractSquareSprite {
         GLES20.glDisableVertexAttribArray(mTexCoordinateHandle);
 
         //Draw all artifacts on HUD.
-        for(Sprite s : hudSprites.values()) {
-            s.draw(glUnused,identityMatrix);
+        synchronized (hudSprites) {
+            for(Sprite s : hudSprites.values()) {
+                s.draw(glUnused,identityMatrix);
+            }
         }
     }
 
@@ -98,69 +104,71 @@ public class Hud extends AbstractSquareSprite {
     /**
      * Called by the GameEngine to inform the HUD of the fact that the star selection has been changed.
      */
-    public synchronized void selectionChanged() {
-        float w = bounds.width();
-        float h = bounds.height();
-        //Get sprites
-        StarSprite source = gEngine.getLastSelectedSource();
-        StarSprite target = gEngine.getLastSelectedTarget();
-        short fighterNum = 0;
-        short bomberNum = 0;
-        //If sliders exist, store state:
-        if(hudSprites.containsKey(HudItem.FIGHTER_SLIDER)) {
-            fighterNum = ((SliderSprite)hudSprites.get(HudItem.FIGHTER_SLIDER)).getVal();
-            bomberNum = ((SliderSprite)hudSprites.get(HudItem.BOMBER_SLIDER)).getVal();
-        }
-        //Rebuild:
-        hudSprites.clear();
-
-        if(source!=null) {
-            StarSelectionSprite sss = new StarSelectionSprite();
-            sss.setPos(0,0);
-            sss.setSize(w * 0.3f, w * 0.3f);
-            sss.loadStar(source);
-            hudSprites.put(HudItem.SOURCE_SELECTION_ICON,sss);
-
-            if(source.getOwnership()==GameEngine.getPlayer()) {
-                BuildSelectionSprite bss = new BuildSelectionSprite(source,HudItem.BUILD_SELECTION);
-                bss.setPos(0, w*0.35f);
-                bss.setSize(w * 0.8f, w * 0.2f);
-                bss.setVal((short) source.getBuildType());
-                bss.setCallback(this);
-                hudSprites.put(HudItem.BUILD_SELECTION,bss);
-                SliderSprite sbs2 = new SliderSprite(source,HudItem.BOMBER_SLIDER);
-                sbs2.setPos(0,w * 0.6f);
-                sbs2.setSize(w * 0.8f, w * 0.2f);
-                sbs2.setVal(bomberNum);
-                hudSprites.put(HudItem.BOMBER_SLIDER,sbs2);
-                SliderSprite sbs = new SliderSprite(source,HudItem.FIGHTER_SLIDER);
-                sbs.setPos(0,w*0.85f);
-                sbs.setSize(w * 0.8f, w * 0.2f);
-                sbs.setVal(fighterNum);
-                hudSprites.put(HudItem.FIGHTER_SLIDER,sbs);
+    public void selectionChanged() {
+        synchronized (hudSprites) {
+            float w = bounds.width();
+            float h = bounds.height();
+            //Get sprites
+            StarSprite source = gEngine.getLastSelectedSource();
+            StarSprite target = gEngine.getLastSelectedTarget();
+            short fighterNum = 0;
+            short bomberNum = 0;
+            //If sliders exist, store state:
+            if(hudSprites.containsKey(HudItem.FIGHTER_SLIDER)) {
+                fighterNum = ((SliderSprite)hudSprites.get(HudItem.FIGHTER_SLIDER)).getVal();
+                bomberNum = ((SliderSprite)hudSprites.get(HudItem.BOMBER_SLIDER)).getVal();
             }
-        }
-        if(target!=null) {
-            StarSelectionSprite sss = new StarSelectionSprite();
-            sss.setPos(w*0.7f,h-w*0.35f);
-            sss.setSize(w*0.3f,w*0.3f);
-            sss.loadStar(target);
-            hudSprites.put(HudItem.TARGET_SELECTION_ICON,sss);
-        }
+            //Rebuild:
+            hudSprites.clear();
 
-        //Attack button, if source and target are selected.
-        if(source!=null
-                && target!=null
-                && !source.equals(target)
-                && GameEngine.getPlayer()==source.getOwnership()) {
-            String text = "Attack!";
-            if(target.getOwnership()==GameEngine.getPlayer()) {
-                text = "Transfer units";
+            if(source!=null) {
+                StarSelectionSprite sss = new StarSelectionSprite();
+                sss.setPos(-1,0);
+                sss.setSize(w * 0.3f, w * 0.3f);
+                sss.loadStar(source);
+                hudSprites.put(HudItem.SOURCE_SELECTION_ICON,sss);
+
+                if(source.getOwnership()==GameEngine.getPlayer()) {
+                    BuildSelectionSprite bss = new BuildSelectionSprite(source,HudItem.BUILD_SELECTION);
+                    bss.setPos(-1, w * 0.35f);
+                    bss.setSize(w * 0.8f, w * 0.2f);
+                    bss.setVal((short) source.getBuildType());
+                    bss.setCallback(this);
+                    hudSprites.put(HudItem.BUILD_SELECTION,bss);
+                    SliderSprite sbs2 = new SliderSprite(source,HudItem.BOMBER_SLIDER);
+                    sbs2.setPos(-1,w * 0.6f);
+                    sbs2.setSize(w * 0.8f, w * 0.2f);
+                    sbs2.setVal(bomberNum);
+                    hudSprites.put(HudItem.BOMBER_SLIDER,sbs2);
+                    SliderSprite sbs = new SliderSprite(source,HudItem.FIGHTER_SLIDER);
+                    sbs.setPos(-1,w*0.85f);
+                    sbs.setSize(w * 0.8f, w * 0.2f);
+                    sbs.setVal(fighterNum);
+                    hudSprites.put(HudItem.FIGHTER_SLIDER,sbs);
+                }
             }
-            ButtonSprite bs = new ButtonSprite(text, this,source);
-            bs.setPos(0,w*1.1f);
-            bs.setSize(w*0.8f,w*0.2f);
-            hudSprites.put(HudItem.LAUNCH_BUTTON,bs);
+            if(target!=null) {
+                StarSelectionSprite sss = new StarSelectionSprite();
+                sss.setPos(-1+w*0.7f,h-w*0.35f);
+                sss.setSize(w*0.3f,w*0.3f);
+                sss.loadStar(target);
+                hudSprites.put(HudItem.TARGET_SELECTION_ICON,sss);
+            }
+
+            //Attack button, if source and target are selected.
+            if(source!=null
+                    && target!=null
+                    && !source.equals(target)
+                    && GameEngine.getPlayer()==source.getOwnership()) {
+                String text = "Attack!";
+                if(target.getOwnership()==GameEngine.getPlayer()) {
+                    text = "Transfer units";
+                }
+                ButtonSprite bs = new ButtonSprite(text, this,source);
+                bs.setPos(-1,w*1.1f);
+                bs.setSize(w*0.8f,w*0.2f);
+                hudSprites.put(HudItem.LAUNCH_BUTTON,bs);
+            }
         }
     }
 
@@ -193,9 +201,11 @@ public class Hud extends AbstractSquareSprite {
     }
 
     private Sprite getHudItemAt(Vector coord) {
-        for(Sprite button : hudSprites.values()) {
-            if(button.contains(coord)) {
-                return button;
+        synchronized (hudSprites) {
+            for(Sprite button : hudSprites.values()) {
+                if(button.contains(coord)) {
+                    return button;
+                }
             }
         }
         return null;

@@ -74,6 +74,7 @@ public class GameEngine implements DataPacketListener {
     /**
      * Click. Set the star clicked to "target"
      * @param pos Position vector in world coordinates.
+     * @return true if HUD was touched, false otherwise.
      */
     public void touched(Vector pos) {
         StarSprite star = starMap.getStarAtPosition(pos);
@@ -98,16 +99,6 @@ public class GameEngine implements DataPacketListener {
         hud.selectionChanged();
     }
 
-    /**
-     * Drag action. Permutes HUD if a slider was hit.
-     * @param start Start point. Screen [-1,1] coordinates.
-     * @param dist Distance travelled. Screen [-1,1] coordinates
-     * @return True if something in the HUD was touched, false otherwise.
-     */
-    public boolean move(Vector start, Vector dist) {
-        return hud.move(start,dist);
-    }
-
     public StarSprite getLastSelectedSource() { return lastSelectedSource; }
     public StarSprite getLastSelectedTarget() { return lastSelectedTarget; }
     public GameClient getClient() { return communicator; }
@@ -124,4 +115,5 @@ public class GameEngine implements DataPacketListener {
         //TODO: Listen to what?
     }
 
+    public Hud getHud() { return hud; }
 }

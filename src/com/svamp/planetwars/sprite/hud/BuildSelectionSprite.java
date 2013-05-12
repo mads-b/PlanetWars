@@ -1,6 +1,5 @@
 package com.svamp.planetwars.sprite.hud;
 
-import android.graphics.Color;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.sprite.StarSprite;
 
@@ -14,25 +13,20 @@ public class BuildSelectionSprite extends SliderSprite {
 
     public BuildSelectionSprite(StarSprite star, Hud.HudItem type) {
         super(star, type);
-        maxVal=1;
-        sliderPaint.setColor(Color.GREEN);
+        getSlider().setMaxVal(1);
     }
 
     @Override
     public void draw(GL10 glUnused, float[] mvcMatrix) {
-        /*c.drawRect(bounds,framePaint);
-        c.drawRect(bounds.left+bounds.width()*Math.round(curVal)/2,
-                bounds.top,
-                bounds.right-bounds.width()*Math.round(1 - curVal)/2,
-                bounds.bottom,sliderPaint);*/
+        super.draw(glUnused, mvcMatrix);
     }
 
     @Override
     public void move(Vector amount) {
         super.move(amount);
         //Inform star if state changed.
-        if(star.getBuildType()!=Math.round(curVal)) {
-            star.setBuildType(Math.round(curVal));
+        if(star.getBuildType()!=Math.round(0)) {
+            star.setBuildType(Math.round(0));
             callback.buildSelectionChanged(star);
         }
     }

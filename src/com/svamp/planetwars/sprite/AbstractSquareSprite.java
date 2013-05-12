@@ -55,6 +55,7 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
     protected void updateVertices() {
         drawOrderBuffer.rewind();
         textureBuffer.rewind();
+        vertexBuffer.rewind();
         vertexBuffer
                 .put(bounds.left).put(bounds.bottom).put(0)
                 .put(bounds.left).put(bounds.top).put(0)
@@ -69,6 +70,7 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
     /** This will be used to pass in model position information. */
     private static int mPositionHandle;
     protected static int mProgramHandle = -1;
+    protected static int mColorHandle;
     protected static int mTexCoordinateHandle;
 
     /**
@@ -82,8 +84,13 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
 
         // Set program handles. These will later be used to pass in values to the program.
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "MVPMatrix");
+        mColorHandle = GLES20.glGetUniformLocation(mProgramHandle, "color");
         mPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, "position");
         mTexCoordinateHandle = GLES20.glGetAttribLocation(mProgramHandle,"texCoordinate");
+
+        //Set default color to white to ensure unset color draws uncolorized texture.
+        GLES20.glUseProgram(mProgramHandle);
+        GLES20.glUniform4f(mColorHandle,1,1,1,1);
 
         Log.d(TAG, "errors:" + GLES20.glGetProgramInfoLog(mProgramHandle) + GLES20.glGetShaderInfoLog(vertexShaderHandle) + GLES20.glGetShaderInfoLog(fragmentShaderHandle));
     }

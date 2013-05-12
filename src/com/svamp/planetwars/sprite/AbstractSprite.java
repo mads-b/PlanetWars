@@ -25,12 +25,12 @@ public abstract class AbstractSprite implements Sprite,ByteSerializeable {
         updateVertices();
     }
     public void setPos(float x, float y) {
-        this.bounds.offsetTo(x,y);
+        this.bounds.set(x,y,x+bounds.width(),y+bounds.height());
         updateVertices();
     }
 
     public void setSize(float width, float height) {
-        this.bounds.set(bounds.left, bounds.top-height, bounds.left+width, bounds.top);
+        this.bounds.set(bounds.left, bounds.top, bounds.left+width, bounds.top+height);
         updateVertices();
     }
 

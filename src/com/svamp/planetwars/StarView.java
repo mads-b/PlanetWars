@@ -9,10 +9,13 @@ import android.view.MotionEvent;
 import com.svamp.planetwars.math.TouchCallback;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.network.GameClient;
+import com.svamp.planetwars.sprite.hud.Hud;
 
 public class StarView extends GLSurfaceView implements TouchCallback {
     //Game engine
     private GameEngine gEngine;
+    private Hud hud;
+
 
     //objects which house info about the screen
     private final Context context;
@@ -63,9 +66,14 @@ public class StarView extends GLSurfaceView implements TouchCallback {
      */
     @Override
     public void touched(Vector pos) {
-        renderer.scaleToWorldCoords(pos);
-        Log.d(TAG, "Touched z=0 plane at "+pos);
-        gEngine.touched(pos);
+        Vector giScaledPos = new Vector(pos);
+        renderer.scaleToGlCoords(giScaledPos);
+        // Check if HUD is touched. If not, touch map in gEngine instead
+        if(!gEngine.getHud().touch(giScaledPos)) {
+            renderer.scaleToWorldCoords(pos);
+            Log.d(TAG, "Touched z=0 plane at "+pos);
+            gEngine.touched(pos);
+        }
     }
 
     @Override
@@ -77,13 +85,13 @@ public class StarView extends GLSurfaceView implements TouchCallback {
 
     @Override
     public void move(Vector start, Vector dist) {
-        //Two point case: Check if something moved on the HUD, move map otherwise.
-        renderer.scaleToGlCoords(start);
-        renderer.scaleToGlCoords(dist);
-        if(!gEngine.move(start,dist)) {
-            //No HUD modify. Convert pos back into screen pixel coords.
-            renderer.scaleToScreenCoords(start);
-            renderer.scaleToScreenCoords(dist);
+        Vector giScaledStart = new Vector(start);
+        Vector giScaledEnd = new Vector(start.x+dist.x,start.y+dist.y);
+        renderer.scaleToGlCoords(giScaledStart);
+        renderer.scaleToGlCoords(giScaledEnd);
+        giScaledEnd.add(-giScaledStart.x,-giScaledStart.y);
+        // Check if HUD was moved. If not, move map instead.
+        if(!gEngine.getHud().move(giScaledStart,giScaledEnd)) {
             renderer.move(start, dist);
         }
 

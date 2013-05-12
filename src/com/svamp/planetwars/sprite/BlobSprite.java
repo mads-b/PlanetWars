@@ -9,16 +9,13 @@ import java.util.Collection;
 
 
 public class BlobSprite extends AbstractLineSprite {
-    private final float[] color = new float[4];
+    private final float[] color;
 
     private static final String TAG = BlobSprite.class.getCanonicalName();
 
     public BlobSprite(Collection<Vector> line,int color) {
         super(line);
-        this.color[0] = Color.red(color)/255f;
-        this.color[1] = Color.green(color)/255f;
-        this.color[2] = Color.blue(color)/255f;
-        this.color[3] = Color.alpha(color)/255f;
+        this.color = SpriteFactory.splitColor(color);
     }
 
     @Override
