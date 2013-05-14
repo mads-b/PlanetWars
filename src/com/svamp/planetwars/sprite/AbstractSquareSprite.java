@@ -16,6 +16,7 @@ import java.nio.ShortBuffer;
  * This class only accepts sprites using one texture mapped on a quad.
  */
 public abstract class AbstractSquareSprite extends AbstractSprite {
+    private int texHandle = -1;
 
     private static final String TAG = AbstractSquareSprite.class.getCanonicalName();
 
@@ -24,6 +25,23 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
      * and also initializing eventual textures and other info.
      */
     public void draw(GL10 glUnused, float[] mvpMatrix) {
+        //Switch to the texture we need, if applicable.
+        if(texHandle != -1) {
+            // Set the active texture unit to texture unit 0.
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+
+            // Bind the texture to this unit.
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texHandle);
+
+            // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
+            GLES20.glUniform1i(mTexCoordinateHandle, 0);
+
+            GLES20.glEnableVertexAttribArray(mTexCoordinateHandle);
+
+            GLES20.glVertexAttribPointer(mTexCoordinateHandle, 2, GLES20.GL_FLOAT, false,
+                    0, textureBuffer);
+        }
+
         // Enable a handle to the triangle vertices
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
@@ -41,11 +59,21 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+        //Disable texture, if applicable.
+        if(texHandle != -1) {
+            GLES20.glDisableVertexAttribArray(mTexCoordinateHandle);
+        }
     }
 
-    /*
-     * OpenGL-specific stuff:
+    /**
+     * Apply a texture to this sprite.
+     * @param texHandle OpenGL handle to texture already uploaded. Or -1 to disable texture.
      */
+    protected void setTexture(int texHandle) {
+        this.texHandle = texHandle;
+    }
+
+
     private static final short[] drawOrder = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
     private static final float[] textureOrder = { 0,0,0,1,1,1,1,0 }; //Coordinates for texture.
 

@@ -87,4 +87,6 @@ public abstract class AbstractSprite implements Sprite,ByteSerializeable {
      * requiring repositioning of the vertices.
      */
     protected abstract void updateVertices();
+
+
 }

@@ -1,5 +1,6 @@
 package com.svamp.planetwars.sprite.hud;
 
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -44,30 +45,25 @@ public class Hud extends AbstractSquareSprite {
         if(glTexId == -1) {
             glTexId = SpriteFactory.getInstance()
                     .getTextureId(glUnused, R.drawable.planetwars_hud, GLES20.GL_CLAMP_TO_EDGE);
+            super.setTexture(glTexId);
         }
         GLES20.glUseProgram(getProgramHandle());
 
-        // Set the active texture unit to texture unit 0.
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-
-        // Bind the texture to this unit.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, glTexId);
-
-        // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
-        GLES20.glUniform1i(mTexCoordinateHandle, 0);
-
-        GLES20.glEnableVertexAttribArray(mTexCoordinateHandle);
-
-        GLES20.glVertexAttribPointer(mTexCoordinateHandle, 2, GLES20.GL_FLOAT, false,
-                0, textureBuffer);
         //Draw vertices.
         super.draw(glUnused,identityMatrix);
-        GLES20.glDisableVertexAttribArray(mTexCoordinateHandle);
 
         //Draw all artifacts on HUD.
         synchronized (hudSprites) {
             for(Sprite s : hudSprites.values()) {
                 s.draw(glUnused,identityMatrix);
+            }
+        }
+    }
+
+    public void update(float dt) {
+        synchronized (hudSprites) {
+            for(Sprite s : hudSprites.values()) {
+                s.update(dt);
             }
         }
     }
@@ -212,11 +208,17 @@ public class Hud extends AbstractSquareSprite {
     }
 
     public enum HudItem {
-        SOURCE_SELECTION_ICON,
-        TARGET_SELECTION_ICON,
-        BOMBER_SLIDER,
-        FIGHTER_SLIDER,
-        BUILD_SELECTION,
-        LAUNCH_BUTTON
+        SOURCE_SELECTION_ICON(0),
+        TARGET_SELECTION_ICON(0),
+        BOMBER_SLIDER(Color.BLUE),
+        FIGHTER_SLIDER(Color.RED),
+        BUILD_SELECTION(Color.GRAY),
+        LAUNCH_BUTTON(0);
+
+        private int color;
+        HudItem(int c) {
+            color = c;
+        }
+        int getColor() { return color; }
     }
 }

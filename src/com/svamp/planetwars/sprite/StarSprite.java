@@ -1,8 +1,5 @@
 package com.svamp.planetwars.sprite;
 
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.opengl.GLES20;
 import com.svamp.planetwars.BattleField;
 import com.svamp.planetwars.GameEngine;
@@ -23,9 +20,6 @@ public class StarSprite extends AbstractSquareSprite {
 
     private final int drawableTexId;
     private int glTexId = -1;
-
-    private static final Paint fighterPaint = new Paint();
-    private static final Paint bomberPaint = new Paint();
 
     /*
      * Game mechanic variables follow
@@ -54,12 +48,6 @@ public class StarSprite extends AbstractSquareSprite {
         this.maxHP= (short) (radius*10);
         //Bounds == radius*2.
         this.setSize(radius*2, radius*2);
-        fighterPaint.setColor(Color.RED);
-        fighterPaint.setStrokeWidth(10);
-        fighterPaint.setStyle(Style.STROKE);
-        bomberPaint.setColor(Color.BLUE);
-        bomberPaint.setStrokeWidth(10);
-        bomberPaint.setStyle(Style.STROKE);
         resetHP();
     }
 
@@ -76,23 +64,11 @@ public class StarSprite extends AbstractSquareSprite {
         if(glTexId == -1) {
             glTexId = SpriteFactory.getInstance()
                     .getTextureId(glUnused, drawableTexId, GLES20.GL_CLAMP_TO_EDGE);
+            super.setTexture(glTexId);
         }
-        // Set the active texture unit to texture unit 0.
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
-        // Bind the texture to this unit.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, glTexId);
-
-        // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
-        GLES20.glUniform1i(mTexCoordinateHandle, 0);
-
-        GLES20.glEnableVertexAttribArray(mTexCoordinateHandle);
-
-        GLES20.glVertexAttribPointer(mTexCoordinateHandle, 2, GLES20.GL_FLOAT, false,
-                0, textureBuffer);
-        //Draw vertices.
+        //Draw Quad
         super.draw(glUnused,mvpMatrix);
-        GLES20.glDisableVertexAttribArray(mTexCoordinateHandle);
     }
 
     @Override

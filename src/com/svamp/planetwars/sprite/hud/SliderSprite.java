@@ -1,7 +1,5 @@
 package com.svamp.planetwars.sprite.hud;
 
-import android.graphics.Color;
-import android.graphics.RectF;
 import android.opengl.GLES20;
 import android.util.Log;
 import com.svamp.planetwars.Fleet;
@@ -27,42 +25,34 @@ public class SliderSprite extends AbstractSquareSprite {
     public SliderSprite(StarSprite star, Hud.HudItem type) {
         this.star=star;
         this.type=type;
-        int color = type == Hud.HudItem.BOMBER_SLIDER ? Color.BLUE : Color.RED;
-        this.slider = new Slider(color);
+        this.slider = new Slider(type.getColor());
     }
 
     @Override
     public void draw(GL10 glUnused, float[] mvpMatrix) {
-        //Number of fighters/bombers might change. Make sure we're updated.
-        Fleet homeFleet = star.getBattleField().getHomeFleet();
-        int val = type == Hud.HudItem.BOMBER_SLIDER
-                ? homeFleet.getBomberNum()
-                : homeFleet.getFighterNum();
-        slider.setMaxVal(val);
-        //Draw slider first so it goes underneath the following overlay.
-        slider.draw(glUnused,mvpMatrix);
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
         if(glTexId == -1) {
             glTexId = SpriteFactory.getInstance()
                     .getTextureId(glUnused, R.drawable.planetwars_slider, GLES20.GL_CLAMP_TO_EDGE);
+            super.setTexture(glTexId);
         }
-        // Set the active texture unit to texture unit 0.
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
-        // Bind the texture to this unit.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, glTexId);
-
-        // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
-        GLES20.glUniform1i(mTexCoordinateHandle, 0);
-
-        GLES20.glEnableVertexAttribArray(mTexCoordinateHandle);
-
-        GLES20.glVertexAttribPointer(mTexCoordinateHandle, 2, GLES20.GL_FLOAT, false,
-                0, textureBuffer);
+        //Draw slider first so it goes underneath the following overlay.
+        slider.draw(glUnused,mvpMatrix);
         //Draw vertices.
         super.draw(glUnused,mvpMatrix);
+    }
 
-        GLES20.glDisableVertexAttribArray(mTexCoordinateHandle);
+    @Override
+    public void update(float dt) {
+        //Number of fighters/bombers might change. Make sure we're updated.
+        if(type == Hud.HudItem.BOMBER_SLIDER || type == Hud.HudItem.FIGHTER_SLIDER) {
+            Fleet homeFleet = star.getBattleField().getHomeFleet();
+            int val = type == Hud.HudItem.BOMBER_SLIDER
+                    ? homeFleet.getBomberNum()
+                    : homeFleet.getFighterNum();
+            slider.setMaxVal(val);
+        }
     }
 
     @Override
@@ -83,7 +73,7 @@ public class SliderSprite extends AbstractSquareSprite {
     }
 
     public short getVal() {
-        return (short) Math.round(100*slider.curVal);
+        return (short) Math.round(slider.curVal);
     }
 
     protected Slider getSlider() { return slider; }
@@ -114,7 +104,7 @@ public class SliderSprite extends AbstractSquareSprite {
             Log.d(SliderSprite.class.getCanonicalName(),"Incremented slider with "+val+" now it is"+curVal);
             curVal += val;
             curVal = Math.min(maxVal,Math.max(0,curVal));
-            this.setSize(maxWidth*curVal/maxVal,bounds.height());
+            this.setSize(maxWidth*Math.round(curVal)/maxVal,bounds.height());
         }
 
         @Override
