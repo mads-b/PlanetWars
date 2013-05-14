@@ -59,7 +59,7 @@ public class SpriteFactory {
         if(cache.indexOfKey(id)>=0) return cache.get(id);
         //Fetch from resources, bind/upload to GPU.
         Bitmap bitmap = BitmapFactory.decodeResource(res,id);
-        int result = registerBitmapInGl(bitmap, repeat);
+        int result = registerBitmapInGl(bitmap, repeat, GLES20.GL_NEAREST);
         // Delete bitmap from local memory.
         bitmap.recycle();
         cache.put(id,result);
@@ -86,7 +86,7 @@ public class SpriteFactory {
         Canvas c = new Canvas(bmp);
         c.drawText(text,0,size2.height(),strokeStyle);
         c.drawText(text,0,size.height(),style);
-        return registerBitmapInGl(bmp,GLES20.GL_CLAMP_TO_EDGE);
+        return registerBitmapInGl(bmp,GLES20.GL_CLAMP_TO_EDGE, GLES20.GL_LINEAR);
     }
 
     /**
@@ -116,9 +116,10 @@ public class SpriteFactory {
     /**
      * Loads a bitmap in GPU memory. Recycles the bitmap afterwards.
      * @param bitmap Bitmap image.
+     * @param filtering Min and mag filter. Ex: GLES20.GL_NEAREST or GLES20.GL_LINEAR
      * @return OpenGL texture reference the image is bound to.
      */
-    private int registerBitmapInGl(Bitmap bitmap, int repeat) {
+    private int registerBitmapInGl(Bitmap bitmap, int repeat,int filtering) {
         int[] texture = new int[1];
         // Make a texture ID.
         GLES20.glGenTextures(1, texture, 0);
@@ -127,8 +128,8 @@ public class SpriteFactory {
         // ...and bind it to our array
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture[0]);
         // create nearest filtered texture
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, filtering);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, filtering);
         // Repeating
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, repeat);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, repeat);

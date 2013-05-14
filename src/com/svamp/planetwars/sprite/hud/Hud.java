@@ -10,22 +10,25 @@ import com.svamp.planetwars.R;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.network.GameEvent;
 import com.svamp.planetwars.network.PackageHeader;
-import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.Sprite;
 import com.svamp.planetwars.sprite.SpriteFactory;
 import com.svamp.planetwars.sprite.StarSprite;
 
 import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Heads-up-display for game. Used by gameEngine.
  */
-public class Hud extends AbstractSquareSprite {
+public class Hud extends AbstractHudSprite {
 
     private final Map<HudItem,Sprite> hudSprites = new HashMap<HudItem, Sprite>();
+    private final SortedSet<AbstractHudSprite> zDepthCache = new TreeSet<AbstractHudSprite>().descendingSet();
     private final GameEngine gEngine;
     private int glTexId = -1;
     /* Identity matrix to be sent to draw calls to ensure HUD is not translated according to MVP-matrix. */
@@ -56,7 +59,7 @@ public class Hud extends AbstractSquareSprite {
 
         //Draw all artifacts on HUD.
         synchronized (hudSprites) {
-            for(Sprite s : hudSprites.values()) {
+            for(Sprite s : zDepthCache) {
                 s.draw(glUnused,identityMatrix);
             }
         }
@@ -118,13 +121,14 @@ public class Hud extends AbstractSquareSprite {
             }
             //Rebuild:
             hudSprites.clear();
+            zDepthCache.clear();
 
             if(source!=null) {
                 StarSelectionSprite sss = new StarSelectionSprite();
                 sss.setPos(-1,0);
                 sss.setSize(w * 0.3f, w * 0.3f);
                 sss.loadStar(source);
-                hudSprites.put(HudItem.SOURCE_SELECTION_ICON,sss);
+                addSprite(HudItem.SOURCE_SELECTION_ICON,sss);
 
                 if(source.getOwnership()==GameEngine.getPlayer()) {
                     BuildSelectionSprite bss = new BuildSelectionSprite(source,HudItem.BUILD_SELECTION);
@@ -132,17 +136,17 @@ public class Hud extends AbstractSquareSprite {
                     bss.setSize(w * 0.7f, w * 0.2f);
                     bss.setVal((short) source.getBuildType());
                     bss.setCallback(this);
-                    hudSprites.put(HudItem.BUILD_SELECTION,bss);
+                    addSprite(HudItem.BUILD_SELECTION,bss);
                     SliderSprite sbs2 = new SliderSprite(source,HudItem.BLUE_SLIDER);
                     sbs2.setPos(-1,w * 0.4f);
                     sbs2.setSize(w * 0.7f, w * 0.2f);
                     sbs2.setVal(bomberNum);
-                    hudSprites.put(HudItem.BLUE_SLIDER,sbs2);
+                    addSprite(HudItem.BLUE_SLIDER,sbs2);
                     SliderSprite sbs = new SliderSprite(source,HudItem.RED_SLIDER);
                     sbs.setPos(-1,w*0.15f);
                     sbs.setSize(w * 0.7f, w * 0.2f);
                     sbs.setVal(fighterNum);
-                    hudSprites.put(HudItem.RED_SLIDER,sbs);
+                    addSprite(HudItem.RED_SLIDER,sbs);
                 }
             }
             if(target!=null) {
@@ -150,7 +154,7 @@ public class Hud extends AbstractSquareSprite {
                 sss.setPos(-1+w*0.7f,-1);
                 sss.setSize(w*0.3f,w*0.3f);
                 sss.loadStar(target);
-                hudSprites.put(HudItem.TARGET_SELECTION_ICON,sss);
+                addSprite(HudItem.TARGET_SELECTION_ICON,sss);
             }
 
             //Attack button, if source and target are selected.
@@ -165,7 +169,7 @@ public class Hud extends AbstractSquareSprite {
                 ButtonSprite bs = new ButtonSprite(text, this,source);
                 bs.setPos(-1,-w*0.1f);
                 bs.setSize(w*0.9f,w*0.2f);
-                hudSprites.put(HudItem.LAUNCH_BUTTON,bs);
+                addSprite(HudItem.LAUNCH_BUTTON,bs);
             }
         }
     }
@@ -207,6 +211,16 @@ public class Hud extends AbstractSquareSprite {
             }
         }
         return null;
+    }
+
+    private void addSprite(HudItem item, AbstractHudSprite sprite) {
+        hudSprites.put(item,sprite);
+        zDepthCache.addAll(sprite.getSprites());
+    }
+
+    @Override
+    public Collection<AbstractHudSprite> getSprites() {
+        return zDepthCache;
     }
 
     public enum HudItem {

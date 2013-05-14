@@ -3,18 +3,18 @@ package com.svamp.planetwars.sprite.hud;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.opengl.GLES20;
-import android.util.Log;
 import com.svamp.planetwars.R;
-import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.SpriteFactory;
 import com.svamp.planetwars.sprite.StarSprite;
-import com.svamp.planetwars.sprite.TextSprite;
 
 import javax.microedition.khronos.opengles.GL10;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  */
-public class ButtonSprite extends AbstractSquareSprite {
+public class ButtonSprite extends AbstractHudSprite {
     private final Paint buttonPaint = new Paint();
     private final String buttonText;
     private final TextSprite textSprite;
@@ -31,6 +31,8 @@ public class ButtonSprite extends AbstractSquareSprite {
         buttonPaint.setTextSize(30);
 
         textSprite = new TextSprite(buttonPaint,buttonPaint);
+        setZVal(-.12f);
+        textSprite.setZVal(-.22f);
     }
 
     @Override
@@ -48,9 +50,7 @@ public class ButtonSprite extends AbstractSquareSprite {
             texId = SpriteFactory.getInstance().makeAndRegisterDrawable(glUnused, R.drawable.planetwars_button, GLES20.GL_CLAMP_TO_EDGE);
             setTexture(texId);
         }
-
         super.draw(glUnused,mvcMatrix);
-        textSprite.draw(glUnused,mvcMatrix);
     }
 
     public void push() {
@@ -60,5 +60,12 @@ public class ButtonSprite extends AbstractSquareSprite {
     public void updateVertices() {
         super.updateVertices();
 
+    }
+
+    @Override
+    public Collection<AbstractHudSprite> getSprites() {
+        Collection<AbstractHudSprite> spriteList = super.getSprites();
+        spriteList.addAll(textSprite.getSprites());
+        return spriteList;
     }
 }

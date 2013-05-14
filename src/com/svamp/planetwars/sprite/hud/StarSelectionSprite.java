@@ -12,7 +12,7 @@ import javax.microedition.khronos.opengles.GL10;
  * This class represents the "profile" image of a star, shown in the HUD.
  * It wraps a StarSprite, and uses it to draw.
  */
-public class StarSelectionSprite extends AbstractSquareSprite {
+public class StarSelectionSprite extends AbstractHudSprite {
     private Bitmap star;
 
     private StarSprite realStar;

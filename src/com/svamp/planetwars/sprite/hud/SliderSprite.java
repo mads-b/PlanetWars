@@ -9,14 +9,14 @@ import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.SpriteFactory;
 import com.svamp.planetwars.sprite.StarSprite;
-import com.svamp.planetwars.sprite.TextSprite;
 
 import javax.microedition.khronos.opengles.GL10;
+import java.util.Collection;
 
 /**
  * Slider used to select quantity of ships to use.
  */
-public class SliderSprite extends AbstractSquareSprite {
+public class SliderSprite extends AbstractHudSprite {
     private int glTexId = -1;
     protected final StarSprite star;
     private final Hud.HudItem type;
@@ -40,6 +40,8 @@ public class SliderSprite extends AbstractSquareSprite {
 
         text = new TextSprite(textStyle,textStyle);
         setZVal(-.2f);
+        text.setZVal(-.11f);
+        slider.setZVal(-.1f);
     }
 
     @Override
@@ -56,10 +58,6 @@ public class SliderSprite extends AbstractSquareSprite {
                     .makeAndRegisterDrawable(glUnused, R.drawable.planetwars_slider, GLES20.GL_CLAMP_TO_EDGE);
             super.setTexture(glTexId);
         }
-        //TODO: Everything on same z-level. Bad. Put on different Z-levels to ensure correct order.
-
-        slider.draw(glUnused,mvpMatrix);
-        text.draw(glUnused,mvpMatrix);
         super.draw(glUnused,mvpMatrix);
     }
 
@@ -94,8 +92,16 @@ public class SliderSprite extends AbstractSquareSprite {
 
     }
 
+    @Override
+    public Collection<AbstractHudSprite> getSprites() {
+        Collection<AbstractHudSprite> spriteList = super.getSprites();
+        spriteList.addAll(text.getSprites());
+        spriteList.addAll(slider.getSprites());
+        return spriteList;
+    }
+
     public void setVal(short val) {
-        slider.incrementValue(val-slider.curVal);
+        slider.incrementValue(val - slider.curVal);
     }
 
     public void move(Vector amount) {
@@ -112,7 +118,7 @@ public class SliderSprite extends AbstractSquareSprite {
 
     protected Slider getSlider() { return slider; }
 
-    protected class Slider extends AbstractSquareSprite {
+    protected class Slider extends AbstractHudSprite {
         private final float[] color;
         private float maxWidth;
         private int maxVal = 0;
@@ -120,7 +126,6 @@ public class SliderSprite extends AbstractSquareSprite {
 
         public Slider(int color) {
             this.color = SpriteFactory.splitColor(color);
-            setZVal(-.1f);
         }
 
         public void setMaxWidth(float maxWidth) {
@@ -150,6 +155,5 @@ public class SliderSprite extends AbstractSquareSprite {
             //Set color to former value
             GLES20.glUniform4f(mColorHandle, 1, 1, 1, 1);
         }
-
     }
 }

@@ -1,11 +1,16 @@
-package com.svamp.planetwars.sprite;
+package com.svamp.planetwars.sprite.hud;
 
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
+import com.svamp.planetwars.sprite.AbstractSquareSprite;
+import com.svamp.planetwars.sprite.SpriteFactory;
 
 import javax.microedition.khronos.opengles.GL10;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Standard quad for drawing text.
@@ -13,7 +18,7 @@ import javax.microedition.khronos.opengles.GL10;
  * width of the text it is asked to represent. The reason for this is to enforce the
  * aspect ratio of the text, to avoid it being stretched.
  */
-public class TextSprite extends AbstractSquareSprite {
+public class TextSprite extends AbstractHudSprite {
     private final Paint textPaint, strokePaint;
     private String curText = "";
     private int glTexId = -1;
@@ -23,7 +28,6 @@ public class TextSprite extends AbstractSquareSprite {
     public TextSprite(Paint textPaint, Paint strokePaint) {
         this.textPaint = textPaint;
         this.strokePaint = strokePaint;
-        setZVal(-.1f);
     }
 
     public void changeText(GL10 glUnused, String text) {

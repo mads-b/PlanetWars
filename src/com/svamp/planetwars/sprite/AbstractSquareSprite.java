@@ -14,16 +14,13 @@ import java.nio.ShortBuffer;
 /**
  * A slightly more implemented version of the AbstractSprite.
  * This class only accepts sprites using one texture mapped on a quad.
+ * The class implements Comparable to allow sorting on Z-level.
  */
 public abstract class AbstractSquareSprite extends AbstractSprite {
     private int texHandle = -1;
-    private float zVal;
+
 
     private static final String TAG = AbstractSquareSprite.class.getCanonicalName();
-
-    public void setZVal(float zVal) {
-        this.zVal = zVal;
-    }
 
     /**
      * Draws the vertices. Remember to call glUseProgram prior to calling this,
@@ -82,16 +79,16 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
     private static final short[] drawOrder = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
     private static final float[] textureOrder = { 0,0,0,1,1,1,1,0 }; //Coordinates for texture.
 
-    private final FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(12 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+    protected final FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(12 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
     private final static ShortBuffer drawOrderBuffer = ByteBuffer.allocateDirect(12).order(ByteOrder.nativeOrder()).asShortBuffer().put(drawOrder);
     private final static FloatBuffer textureOrderBuffer = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(textureOrder);
 
     protected void updateVertices() {
         vertexBuffer
-                .put(bounds.left).put(bounds.bottom).put(zVal)
-                .put(bounds.left).put(bounds.top).put(zVal)
-                .put(bounds.right).put(bounds.top).put(zVal)
-                .put(bounds.right).put(bounds.bottom).put(zVal);
+                .put(bounds.left).put(bounds.bottom).put(0)
+                .put(bounds.left).put(bounds.top).put(0)
+                .put(bounds.right).put(bounds.top).put(0)
+                .put(bounds.right).put(bounds.bottom).put(0);
         vertexBuffer.rewind();
     }
 
@@ -139,4 +136,7 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
         if(mProgramHandle == -1) throw new IllegalStateException("Error! Shaders and program not initialized!");
         return mProgramHandle;
     }
+
+
+
 }
