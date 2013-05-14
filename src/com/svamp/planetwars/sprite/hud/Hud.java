@@ -126,26 +126,26 @@ public class Hud extends AbstractSquareSprite {
 
                 if(source.getOwnership()==GameEngine.getPlayer()) {
                     BuildSelectionSprite bss = new BuildSelectionSprite(source,HudItem.BUILD_SELECTION);
-                    bss.setPos(-1, w * 0.35f);
-                    bss.setSize(w * 0.8f, w * 0.2f);
+                    bss.setPos(-1, w * 0.65f);
+                    bss.setSize(w * 0.7f, w * 0.2f);
                     bss.setVal((short) source.getBuildType());
                     bss.setCallback(this);
                     hudSprites.put(HudItem.BUILD_SELECTION,bss);
                     SliderSprite sbs2 = new SliderSprite(source,HudItem.BLUE_SLIDER);
-                    sbs2.setPos(-1,w * 0.6f);
-                    sbs2.setSize(w * 0.8f, w * 0.2f);
+                    sbs2.setPos(-1,w * 0.4f);
+                    sbs2.setSize(w * 0.7f, w * 0.2f);
                     sbs2.setVal(bomberNum);
                     hudSprites.put(HudItem.BLUE_SLIDER,sbs2);
                     SliderSprite sbs = new SliderSprite(source,HudItem.RED_SLIDER);
-                    sbs.setPos(-1,w*0.85f);
-                    sbs.setSize(w * 0.8f, w * 0.2f);
+                    sbs.setPos(-1,w*0.15f);
+                    sbs.setSize(w * 0.7f, w * 0.2f);
                     sbs.setVal(fighterNum);
                     hudSprites.put(HudItem.RED_SLIDER,sbs);
                 }
             }
             if(target!=null) {
                 StarSelectionSprite sss = new StarSelectionSprite();
-                sss.setPos(-1+w*0.7f,h-w*0.35f);
+                sss.setPos(-1+w*0.7f,-1);
                 sss.setSize(w*0.3f,w*0.3f);
                 sss.loadStar(target);
                 hudSprites.put(HudItem.TARGET_SELECTION_ICON,sss);
@@ -161,8 +161,8 @@ public class Hud extends AbstractSquareSprite {
                     text = "Transfer units";
                 }
                 ButtonSprite bs = new ButtonSprite(text, this,source);
-                bs.setPos(-1,w*1.1f);
-                bs.setSize(w*0.8f,w*0.2f);
+                bs.setPos(-1,-w*0.1f);
+                bs.setSize(w*0.9f,w*0.2f);
                 hudSprites.put(HudItem.LAUNCH_BUTTON,bs);
             }
         }

@@ -96,6 +96,7 @@ public class SpriteFactory {
      */
     public void deleteTextureFromGL(GL10 glUnused, int textureHandle) {
         GLES20.glDeleteTextures(0,new int[] {textureHandle},0);
+        cache.delete(cache.indexOfValue(textureHandle));
     }
 
     /**

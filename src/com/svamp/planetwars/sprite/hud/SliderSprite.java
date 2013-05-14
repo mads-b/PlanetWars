@@ -3,7 +3,6 @@ package com.svamp.planetwars.sprite.hud;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.opengl.GLES20;
-import android.util.Log;
 import com.svamp.planetwars.Fleet;
 import com.svamp.planetwars.R;
 import com.svamp.planetwars.math.Vector;
@@ -35,9 +34,9 @@ public class SliderSprite extends AbstractSquareSprite {
         this.type=type;
         this.slider = new Slider(type.getColor());
         // Set up text for this slider:
-        textStyle.setAntiAlias(true);
         textStyle.setColor(Color.BLACK);
-        textStyle.setTextSize(24);
+        textStyle.setAntiAlias(true);
+        textStyle.setTextSize(30);
 
         text = new TextSprite(textStyle,textStyle);
     }
@@ -56,13 +55,12 @@ public class SliderSprite extends AbstractSquareSprite {
                     .makeAndRegisterDrawable(glUnused, R.drawable.planetwars_slider, GLES20.GL_CLAMP_TO_EDGE);
             super.setTexture(glTexId);
         }
+        //TODO: Everything on same z-level. Bad. Put on different Z-levels to ensure correct order.
 
-        //Draw slider first so it goes underneath the following overlay.
-        slider.draw(glUnused,mvpMatrix);
-        // Draw text
+
         text.draw(glUnused,mvpMatrix);
-        //Draw vertices.
         super.draw(glUnused,mvpMatrix);
+        slider.draw(glUnused,mvpMatrix);
     }
 
     @Override
@@ -101,10 +99,11 @@ public class SliderSprite extends AbstractSquareSprite {
     }
 
     public void move(Vector amount) {
-        if(amount.x == 0) return;
         //Increment slider accordingly
+        int oldVal = getVal();
         slider.incrementValue(slider.maxVal*amount.x/bounds.width());
-        textDirty = true;
+        if(oldVal - getVal() != 0)
+            textDirty = true;
     }
 
     public short getVal() {

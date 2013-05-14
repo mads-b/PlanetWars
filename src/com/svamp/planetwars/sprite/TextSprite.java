@@ -2,6 +2,8 @@ package com.svamp.planetwars.sprite;
 
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.util.Log;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -15,6 +17,8 @@ public class TextSprite extends AbstractSquareSprite {
     private final Paint textPaint, strokePaint;
     private String curText = "";
     private int glTexId = -1;
+
+    private Rect tmp = new Rect();
 
     public TextSprite(Paint textPaint, Paint strokePaint) {
         this.textPaint = textPaint;
@@ -36,10 +40,14 @@ public class TextSprite extends AbstractSquareSprite {
     }
 
     public void setSize(float width, float height) {
-        Rect size = new Rect();
-        textPaint.getTextBounds(curText,0,curText.length(),size);
-        float ratio = size.width()/size.height();
+        textPaint.getTextBounds(curText,0,curText.length(),tmp);
+        float ratio = (float)tmp.width()/ tmp.height();
         // Set new size to new height, and width scaled by the correct aspect ratio.
         super.setSize(ratio*height,height);
+    }
+
+    public RectF getBounds() {
+        if(curText.isEmpty()) throw new UnsupportedOperationException("Cannot get bounds when text is unset!");
+        return super.getBounds();
     }
 }

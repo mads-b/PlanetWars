@@ -46,6 +46,8 @@ public class StarView extends GLSurfaceView implements TouchCallback {
         //initialize our game engine, send along pointer to this player.
         gEngine = new GameEngine(communicator);
 
+        this.setEGLConfigChooser(new MultisampleConfigChooser());
+
         //initialize our Thread class.
         renderer = new GameRenderer(getHolder(), new Handler(), gEngine);
         setRenderer(renderer);
