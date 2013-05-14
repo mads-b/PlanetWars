@@ -88,8 +88,8 @@ public class ShipMap implements DataPacketListener {
          * Also, return false if this player has no fleet here.
          */
         if(starFleet==null ||
-                starFleet.getBomberNum()<fleet.getBomberNum() ||
-                starFleet.getFighterNum()<fleet.getFighterNum()) {
+                starFleet.getBlueCraftNum()<fleet.getBlueCraftNum() ||
+                starFleet.getRedCraftNum()<fleet.getRedCraftNum()) {
             Log.d(TAG, "Error! Tried to send a starFleet the did not exist! Tried to send:" + fleet + " from fleet " + starFleet);
             return false;
         }

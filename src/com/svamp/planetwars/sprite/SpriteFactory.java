@@ -3,7 +3,10 @@ package com.svamp.planetwars.sprite;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
@@ -40,7 +43,7 @@ public class SpriteFactory {
      */
     public SpriteSheet makeSpriteSheet(GL10 glUnused, SpriteSheetType sheet,Sprite sprite) {
         return new SpriteSheet(sprite,sheet.getAnimNum(),sheet.getRotNum(),
-                getTextureId(glUnused, sheet.getId(), GLES20.GL_CLAMP_TO_EDGE));
+                makeAndRegisterDrawable(glUnused, sheet.getId(), GLES20.GL_CLAMP_TO_EDGE));
     }
 
 
@@ -51,13 +54,48 @@ public class SpriteFactory {
      * @param repeat Specified to allow the texture to repeat in both directions. Ex: GLES20.GL_REPEAT
      * @return OpenGL texture handle.
      */
-    public int getTextureId(GL10 glUnused, int id, int repeat) {
+    public int makeAndRegisterDrawable(GL10 glUnused, int id, int repeat) {
         //Fetch texture ID from cache if possible
         if(cache.indexOfKey(id)>=0) return cache.get(id);
         //Fetch from resources, bind/upload to GPU.
-        int result = registerBitmapInGl(id, repeat);
+        Bitmap bitmap = BitmapFactory.decodeResource(res,id);
+        int result = registerBitmapInGl(bitmap, repeat);
+        // Delete bitmap from local memory.
+        bitmap.recycle();
         cache.put(id,result);
         return result;
+    }
+
+    /**
+     * Takes a text string, draws it onto a Bitmap, and loads it into OpenGL memory.
+     * Please do not call this often, as it is expensive.
+     * @param glUnused Unused object to ensure method is called from GL thread.
+     * @param text Text to write to texture
+     * @param style The style of the text
+     * @param strokeStyle Style of the stroke.
+     * @return
+     */
+    public int makeAndRegisterText(GL10 glUnused, String text, Paint style, Paint strokeStyle) {
+        //Measure text to see how big a bitmap we need.
+        Rect size = new Rect();
+        Rect size2 = new Rect();
+        style.getTextBounds(text,0,text.length(),size);
+        strokeStyle.getTextBounds(text,0,text.length(),size2);
+
+        Bitmap bmp = Bitmap.createBitmap(size2.width(),size2.height(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmp);
+        c.drawText(text,0,size2.height(),strokeStyle);
+        c.drawText(text,0,size.height(),style);
+        return registerBitmapInGl(bmp,GLES20.GL_CLAMP_TO_EDGE);
+    }
+
+    /**
+     * Deletes a texture from GL memory, given its texture handle
+     * @param glUnused Unused GL object to ensure method is called from GL thread.
+     * @param textureHandle OpenGL texture handle to the texture to be deleted.
+     */
+    public void deleteTextureFromGL(GL10 glUnused, int textureHandle) {
+        GLES20.glDeleteTextures(0,new int[] {textureHandle},0);
     }
 
     /**
@@ -76,11 +114,10 @@ public class SpriteFactory {
 
     /**
      * Loads a bitmap in GPU memory. Recycles the bitmap afterwards.
-     * @param systemReference R.drawable reference to image.
+     * @param bitmap Bitmap image.
      * @return OpenGL texture reference the image is bound to.
      */
-    private int registerBitmapInGl(int systemReference, int repeat) {
-        Bitmap bitmap = BitmapFactory.decodeResource(res,systemReference);
+    private int registerBitmapInGl(Bitmap bitmap, int repeat) {
         int[] texture = new int[1];
         // Make a texture ID.
         GLES20.glGenTextures(1, texture, 0);

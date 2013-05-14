@@ -39,7 +39,7 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
             GLES20.glEnableVertexAttribArray(mTexCoordinateHandle);
 
             GLES20.glVertexAttribPointer(mTexCoordinateHandle, 2, GLES20.GL_FLOAT, false,
-                    0, textureBuffer);
+                    0, textureOrderBuffer);
         }
 
         // Enable a handle to the triangle vertices
@@ -78,12 +78,10 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
     private static final float[] textureOrder = { 0,0,0,1,1,1,1,0 }; //Coordinates for texture.
 
     private final FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(12 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
-    private final ShortBuffer drawOrderBuffer = ByteBuffer.allocateDirect(12).order(ByteOrder.nativeOrder()).asShortBuffer().put(drawOrder);
-    protected final FloatBuffer textureBuffer = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(textureOrder);
+    private final static ShortBuffer drawOrderBuffer = ByteBuffer.allocateDirect(12).order(ByteOrder.nativeOrder()).asShortBuffer().put(drawOrder);
+    protected final static FloatBuffer textureOrderBuffer = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(textureOrder);
+
     protected void updateVertices() {
-        drawOrderBuffer.rewind();
-        textureBuffer.rewind();
-        vertexBuffer.rewind();
         vertexBuffer
                 .put(bounds.left).put(bounds.bottom).put(0)
                 .put(bounds.left).put(bounds.top).put(0)
@@ -105,6 +103,10 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
      * Creates a program with a vertex and a frag shader.
      */
     public static void initShaders(GL10 glUnused) {
+        // Rewind buffers
+        drawOrderBuffer.rewind();
+        textureOrderBuffer.rewind();
+
         int vertexShaderHandle = ShaderTool.loadShader(glUnused, GLES20.GL_VERTEX_SHADER, R.string.shader_tex_vert);
         int fragmentShaderHandle = ShaderTool.loadShader(glUnused, GLES20.GL_FRAGMENT_SHADER, R.string.shader_tex_frag);
         // Create a program object and store the handle to it.

@@ -59,6 +59,7 @@ public class GameEngine implements DataPacketListener {
     public void update(float dt) {
         //NEVER UPDATE STARMAP HERE! STARS ARE STATIC; AND ONLY TO BE MANUALLY CHANGED FROM HOST!
         shipMap.update(dt);
+        hud.update(dt);
     }
 
     /**

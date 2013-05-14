@@ -34,7 +34,7 @@ public class BattleField implements ByteSerializeable {
 
     public BattleField(StarSprite star) {
         short five = 5;
-        this.homeFleet = new Fleet(Player.getNeutral(),five,five);
+        this.homeFleet = new Fleet(Player.getNeutral(),five,five,five);
         this.star = star;
     }
 
@@ -52,41 +52,18 @@ public class BattleField implements ByteSerializeable {
         if(tickNum % (int)(ADD_SHIP_MULTIPLIER/star.getBounds().width())==0
                 && homeFleet.getOwner()!=Player.getNeutral()) { //Time to make a ship. Only non-neutral players make ships.
             tickNum=0;
-            if(homeFleet.getFighterNum()+homeFleet.getBomberNum()<MAX_UNITS_FOR_BUILD) {
+            if(homeFleet.getRedCraftNum()+homeFleet.getBlueCraftNum()<MAX_UNITS_FOR_BUILD) {
                 if(star.getBuildType()==0) //Fighter
-                    homeFleet.add(new Fleet(homeFleet.getOwner(),(short)1,(short)0));
+                    homeFleet.add(new Fleet(homeFleet.getOwner(),(short)1,(short)0,(short)0));
                 if(star.getBuildType()==1) //Bomber
-                    homeFleet.add(new Fleet(homeFleet.getOwner(),(short)0,(short)1));
+                    homeFleet.add(new Fleet(homeFleet.getOwner(),(short)0,(short)1,(short)0));
                 //No battle? Submit changes anyway.
                 if(actors.size()==0) return 1;
             }
         }
         //If we have actors, we have a battle!
         if(actors.size()==0) { return 0; }
-        //Every actor attacks in turn..:
-        for(Fleet f : actors.values()) {
-            //Bomb the star!
-            star.damageStar(f.getBomberNum()* BOMBER_DAMAGE *TICK_LENGTH);
-            //Destroy its ships!
-            homeFleet.damageFleet(f.getFighterNum()*FIGHTER_DAMAGE*TICK_LENGTH);
-        }
-        //Home retaliates! Get first element in map. Sucks to be them.
-        Fleet victim = actors.values().iterator().next();
-        //Attack with star.
-        victim.damageFleet(star.getAttack()*TICK_LENGTH);
-        //Attack with home fleet
-        victim.damageFleet(homeFleet.getFighterNum()*FIGHTER_DAMAGE*TICK_LENGTH);
 
-        if(victim.isEmpty()) {
-            actors.remove(victim.getOwner());
-        }
-
-        //Star has been conquered! Set owner to someone else...
-        if(star.isDead() && homeFleet.isEmpty()) {
-            actors.remove(victim.getOwner());
-            homeFleet=victim;
-            return 2;
-        }
         return 1;
     }
 

@@ -1,5 +1,6 @@
 package com.svamp.planetwars;
 
+import android.util.Log;
 import com.svamp.planetwars.network.ByteSerializeable;
 import com.svamp.planetwars.network.Player;
 
@@ -12,15 +13,17 @@ public class Fleet implements ByteSerializeable {
     private final static float SHIP_HP=5;
 
     private Player owner;
-    private short fighterNum;
-    private short bomberNum;
+    private short redCraftNum;
+    private short blueCraftNum;
+    private short greenCraftNum;
 
     private float damageAccumulator =0;
 
-    public Fleet(Player owner,short fighterNum,short bomberNum) {
+    public Fleet(Player owner,short redCraftNum,short blueCraftNum,short greenCraftNum) {
         this.owner=owner;
-        this.fighterNum=fighterNum;
-        this.bomberNum=bomberNum;
+        this.redCraftNum = redCraftNum;
+        this.blueCraftNum = blueCraftNum;
+        this.greenCraftNum = greenCraftNum;
     }
 
     public Fleet(ByteBuffer buffer) {
@@ -33,45 +36,30 @@ public class Fleet implements ByteSerializeable {
      * @param f Fleet to add to this object.
      */
     public void add(Fleet f) {
-        this.fighterNum+=f.fighterNum;
-        this.bomberNum+=f.bomberNum;
+        this.redCraftNum +=f.redCraftNum;
+        this.blueCraftNum +=f.blueCraftNum;
+        this.greenCraftNum += f.greenCraftNum;
     }
     /**
      * Subtracts the unit number in the provided fleet from this one.
      * @param fleet Fleet to remove from this one.
      */
     public void subtract(Fleet fleet) {
-        this.fighterNum-=fleet.fighterNum;
-        this.bomberNum-=fleet.bomberNum;
+        this.redCraftNum -= fleet.redCraftNum;
+        this.blueCraftNum -= fleet.blueCraftNum;
+        this.greenCraftNum -= fleet.greenCraftNum;
     }
 
     public boolean damageFleet(float dmg) {
-        damageAccumulator+=dmg;
-        //Damage is over one ship's hp. Destroy a ship.
-        if(damageAccumulator>SHIP_HP) {
-            damageAccumulator-=SHIP_HP;
-            //Randomly decide what ship gets destroyed.
-            if(fighterNum>0 && bomberNum>0) {
-                if(Math.random()>0.5)
-                    fighterNum--;
-                else
-                    bomberNum--;
-            } else if(fighterNum>0) {
-                fighterNum--;
-                return false;
-            } else if(bomberNum>0) {
-                bomberNum--;
-                return false;
-            }
-            return true;
-        }
         return false;
     }
 
-    public short getFighterNum() { return fighterNum; }
-    public short getBomberNum() { return  bomberNum; }
+    public short getRedCraftNum() { return redCraftNum; }
+    public short getBlueCraftNum() { return blueCraftNum; }
+    public short getGreenCraftNum() { return greenCraftNum; }
+
     public Player getOwner() { return owner; }
-    public boolean isEmpty() { return fighterNum==0 && bomberNum==0; }
+    public boolean isEmpty() { return redCraftNum == 0 && blueCraftNum == 0 && greenCraftNum == 0; }
 
     @Override
     public byte[] getSerialization() {
@@ -79,34 +67,41 @@ public class Fleet implements ByteSerializeable {
          * Format:
          * playerId:int
          * damage: float
-         * fighternum: short
-         * bombernum: short
+         * redcraftnum: short
+         * bluecraftnum: short
+         * greencraftnum: short
          */
         ByteBuffer buffer = ByteBuffer.allocate(getSerializedSize());
         buffer.putInt(owner.getElementHash())
                 .putFloat(damageAccumulator)
-                .putShort(fighterNum)
-                .putShort(bomberNum);
+                .putShort(redCraftNum)
+                .putShort(blueCraftNum)
+                .putShort(greenCraftNum);
         return buffer.array();
     }
 
     @Override
     public void updateFromSerialization(ByteBuffer buffer) {
-        owner=GameEngine.getPlayer(buffer.getInt());
-        damageAccumulator=buffer.getFloat();
-        fighterNum=buffer.getShort();
-        bomberNum=buffer.getShort();
+        owner = GameEngine.getPlayer(buffer.getInt());
+        damageAccumulator = buffer.getFloat();
+        redCraftNum = buffer.getShort();
+        blueCraftNum = buffer.getShort();
+        greenCraftNum = buffer.getShort();
+
+
+        Log.d(Fleet.class.getCanonicalName(),"updated. "+toString());
     }
 
     @Override
     public int getSerializedSize() {
-        return 12;
+        return 14;
     }
 
     public String toString() {
         return "[Fleet owner="+owner.toString()+
-                " fighters="+fighterNum+
-                " bombers="+bomberNum+
+                " reds="+ redCraftNum +
+                " blues="+ blueCraftNum +
+                " greens= "+greenCraftNum+
                 " damage= "+damageAccumulator+"]";
     }
 }

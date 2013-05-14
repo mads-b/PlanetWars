@@ -181,7 +181,7 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
         float angle = (float) (2*Math.PI/players.size());
         Vector pos = new Vector(0,MAX_RADIUS);
         for(Player p : players) {
-            Fleet home = new Fleet(p,(short)20,(short)20);
+            Fleet home = new Fleet(p,(short)20,(short)20,(short)20);
             StarSprite spawn = stars.getClosest(pos,MAX_RADIUS);
             Log.d(TAG,"Set spawn for "+p.getPlayerName()+" spawn at: "+spawn.getBounds().centerX()+" X "+spawn.getBounds().centerY());
             spawn.getBattleField().setHomeFleet(home);

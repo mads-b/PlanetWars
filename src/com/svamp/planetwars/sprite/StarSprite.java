@@ -15,9 +15,6 @@ import java.nio.ByteBuffer;
  */
 
 public class StarSprite extends AbstractSquareSprite {
-    private final static float STAR_DAMAGE_COEFF=0.002f;
-    private final static float STAR_HP_REGEN_COEFF = 0.1f;
-
     private final int drawableTexId;
     private int glTexId = -1;
 
@@ -26,9 +23,7 @@ public class StarSprite extends AbstractSquareSprite {
      */
     //Every star is a battlefield. Some stars have battlefields with multiple actors within.
     private final BattleField battleField = new BattleField(this);
-    //Hit points for the star. It is reckoned to be "neutral" again when this is 0.
-    private short HP;
-    private short maxHP;
+
     private int buildType=0;
 
     private StarMap hostMap;
@@ -44,11 +39,8 @@ public class StarSprite extends AbstractSquareSprite {
      */
     public StarSprite(float radius,int drawableTexId) {
         this.drawableTexId = drawableTexId;
-        //Hitpoints are proportional to size of star.
-        this.maxHP= (short) (radius*10);
         //Bounds == radius*2.
         this.setSize(radius*2, radius*2);
-        resetHP();
     }
 
     public void setCallback(StarMap hostMap) {
@@ -63,7 +55,7 @@ public class StarSprite extends AbstractSquareSprite {
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
         if(glTexId == -1) {
             glTexId = SpriteFactory.getInstance()
-                    .getTextureId(glUnused, drawableTexId, GLES20.GL_CLAMP_TO_EDGE);
+                    .makeAndRegisterDrawable(glUnused, drawableTexId, GLES20.GL_CLAMP_TO_EDGE);
             super.setTexture(glTexId);
         }
 
@@ -73,10 +65,6 @@ public class StarSprite extends AbstractSquareSprite {
 
     @Override
     public void update(float dt) {
-        if(battleField.numActors()==0 && HP!=maxHP) { //Star only rebuilds when it's peaceful.
-            //Let both clients and hosts update this. It's irrelevant outside of battle anyway.
-            HP+=maxHP*STAR_HP_REGEN_COEFF*dt;
-        }
             int result = battleField.update(dt);
             if(hostMap!=null && result!=0)
                 hostMap.fireStarStateChanged(result,this);
@@ -95,8 +83,6 @@ public class StarSprite extends AbstractSquareSprite {
         //Put current and max HP. 4*2 bytes.
         buffer.put(ancestor)
                 .put((byte) buildType)
-                .putShort(HP)
-                .putShort(maxHP)
                 .put(_battleField);
         return buffer.array();
     }
@@ -105,14 +91,12 @@ public class StarSprite extends AbstractSquareSprite {
     public void updateFromSerialization(ByteBuffer buffer) {
         super.updateFromSerialization(buffer); //Update ancestor
         buildType = buffer.get(); //Selected craft to build.
-        HP=buffer.getShort();
-        maxHP=buffer.getShort();
         battleField.updateFromSerialization(buffer);
     }
 
     @Override
     public int getSerializedSize() {
-        return 5+super.getSerializedSize()+battleField.getSerializedSize();
+        return 1+super.getSerializedSize()+battleField.getSerializedSize();
     }
 
     /**
@@ -144,25 +128,11 @@ public class StarSprite extends AbstractSquareSprite {
         return (star.getBattleField().numActors()==0 ? statusDesc[0] : statusDesc[1]);
     }
 
-    /**
-     * Methods manipulating or using Star HP.
-     */
-    public void damageStar(float amount) {
-        HP-=amount;
-        if(HP<0) HP=0;
-    }
-    void resetHP() { HP=maxHP; }
-    public boolean isDead() { return HP <= 0; }
+
     public void setBuildType(int buildType) {
         this.buildType=buildType;
     }
     public int getBuildType() { return buildType; }
-
-    /**
-     * Gets the amount of damage this star does per tick.
-     */
-    public float getAttack() { return maxHP*STAR_DAMAGE_COEFF; }
-
 
     public String toString() {
         return "[StarSprite at:"+bounds.centerX()+"x"+bounds.centerY()+"]";

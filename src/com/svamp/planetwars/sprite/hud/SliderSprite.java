@@ -1,5 +1,7 @@
 package com.svamp.planetwars.sprite.hud;
 
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.opengl.GLES20;
 import android.util.Log;
 import com.svamp.planetwars.Fleet;
@@ -8,6 +10,7 @@ import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.SpriteFactory;
 import com.svamp.planetwars.sprite.StarSprite;
+import com.svamp.planetwars.sprite.TextSprite;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -21,24 +24,43 @@ public class SliderSprite extends AbstractSquareSprite {
 
     private Slider slider;
 
+    private Paint textStyle = new Paint();
+    private final TextSprite text;
+    // Toggle used to refresh text sprite when data has changed.
+    private boolean textDirty = true;
+
 
     public SliderSprite(StarSprite star, Hud.HudItem type) {
         this.star=star;
         this.type=type;
         this.slider = new Slider(type.getColor());
+        // Set up text for this slider:
+        textStyle.setAntiAlias(true);
+        textStyle.setColor(Color.BLACK);
+        textStyle.setTextSize(24);
+
+        text = new TextSprite(textStyle,textStyle);
     }
 
     @Override
     public void draw(GL10 glUnused, float[] mvpMatrix) {
+        // Remake text if info changed.
+        if(textDirty) {
+            text.changeText(null, (int)slider.curVal+"/"+slider.maxVal);
+            textDirty = false;
+        }
+
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
         if(glTexId == -1) {
             glTexId = SpriteFactory.getInstance()
-                    .getTextureId(glUnused, R.drawable.planetwars_slider, GLES20.GL_CLAMP_TO_EDGE);
+                    .makeAndRegisterDrawable(glUnused, R.drawable.planetwars_slider, GLES20.GL_CLAMP_TO_EDGE);
             super.setTexture(glTexId);
         }
 
         //Draw slider first so it goes underneath the following overlay.
         slider.draw(glUnused,mvpMatrix);
+        // Draw text
+        text.draw(glUnused,mvpMatrix);
         //Draw vertices.
         super.draw(glUnused,mvpMatrix);
     }
@@ -46,12 +68,17 @@ public class SliderSprite extends AbstractSquareSprite {
     @Override
     public void update(float dt) {
         //Number of fighters/bombers might change. Make sure we're updated.
-        if(type == Hud.HudItem.BOMBER_SLIDER || type == Hud.HudItem.FIGHTER_SLIDER) {
+        if(type == Hud.HudItem.BLUE_SLIDER || type == Hud.HudItem.RED_SLIDER) {
             Fleet homeFleet = star.getBattleField().getHomeFleet();
-            int val = type == Hud.HudItem.BOMBER_SLIDER
-                    ? homeFleet.getBomberNum()
-                    : homeFleet.getFighterNum();
-            slider.setMaxVal(val);
+            int val = type == Hud.HudItem.BLUE_SLIDER
+                    ? homeFleet.getBlueCraftNum()
+                    : homeFleet.getRedCraftNum();
+
+            // Maximum value has changed!
+            if(slider.maxVal != val) {
+                slider.setMaxVal(val);
+                textDirty = true;
+            }
         }
     }
 
@@ -61,6 +88,12 @@ public class SliderSprite extends AbstractSquareSprite {
         slider.setPos(bounds.left,bounds.top);
         slider.setSize(bounds.width(),bounds.height());
         slider.setMaxWidth(bounds.width());
+
+        // Put text to the left of this sprite's bounds.
+        text.setPos(bounds.right,bounds.top);
+        // Text doesn't care about width.
+        text.setSize(1337,bounds.height()/3);
+
     }
 
     public void setVal(short val) {
@@ -68,8 +101,10 @@ public class SliderSprite extends AbstractSquareSprite {
     }
 
     public void move(Vector amount) {
+        if(amount.x == 0) return;
         //Increment slider accordingly
         slider.incrementValue(slider.maxVal*amount.x/bounds.width());
+        textDirty = true;
     }
 
     public short getVal() {
@@ -101,7 +136,6 @@ public class SliderSprite extends AbstractSquareSprite {
          * @param val How much to increment the slider with. Cannot exceed interval 0-1.
          */
         public void incrementValue(float val) {
-            Log.d(SliderSprite.class.getCanonicalName(),"Incremented slider with "+val+" now it is"+curVal);
             curVal += val;
             curVal = Math.min(maxVal,Math.max(0,curVal));
             this.setSize(maxWidth*Math.round(curVal)/maxVal,bounds.height());
