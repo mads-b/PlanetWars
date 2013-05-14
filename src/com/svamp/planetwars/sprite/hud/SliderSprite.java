@@ -39,6 +39,7 @@ public class SliderSprite extends AbstractSquareSprite {
         textStyle.setTextSize(30);
 
         text = new TextSprite(textStyle,textStyle);
+        setZVal(-.2f);
     }
 
     @Override
@@ -57,10 +58,9 @@ public class SliderSprite extends AbstractSquareSprite {
         }
         //TODO: Everything on same z-level. Bad. Put on different Z-levels to ensure correct order.
 
-
+        slider.draw(glUnused,mvpMatrix);
         text.draw(glUnused,mvpMatrix);
         super.draw(glUnused,mvpMatrix);
-        slider.draw(glUnused,mvpMatrix);
     }
 
     @Override
@@ -120,6 +120,7 @@ public class SliderSprite extends AbstractSquareSprite {
 
         public Slider(int color) {
             this.color = SpriteFactory.splitColor(color);
+            setZVal(-.1f);
         }
 
         public void setMaxWidth(float maxWidth) {

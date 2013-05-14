@@ -17,8 +17,13 @@ import java.nio.ShortBuffer;
  */
 public abstract class AbstractSquareSprite extends AbstractSprite {
     private int texHandle = -1;
+    private float zVal;
 
     private static final String TAG = AbstractSquareSprite.class.getCanonicalName();
+
+    public void setZVal(float zVal) {
+        this.zVal = zVal;
+    }
 
     /**
      * Draws the vertices. Remember to call glUseProgram prior to calling this,
@@ -79,14 +84,14 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
 
     private final FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(12 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
     private final static ShortBuffer drawOrderBuffer = ByteBuffer.allocateDirect(12).order(ByteOrder.nativeOrder()).asShortBuffer().put(drawOrder);
-    protected final static FloatBuffer textureOrderBuffer = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(textureOrder);
+    private final static FloatBuffer textureOrderBuffer = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(textureOrder);
 
     protected void updateVertices() {
         vertexBuffer
-                .put(bounds.left).put(bounds.bottom).put(0)
-                .put(bounds.left).put(bounds.top).put(0)
-                .put(bounds.right).put(bounds.top).put(0)
-                .put(bounds.right).put(bounds.bottom).put(0);
+                .put(bounds.left).put(bounds.bottom).put(zVal)
+                .put(bounds.left).put(bounds.top).put(zVal)
+                .put(bounds.right).put(bounds.top).put(zVal)
+                .put(bounds.right).put(bounds.bottom).put(zVal);
         vertexBuffer.rewind();
     }
 

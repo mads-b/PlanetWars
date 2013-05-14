@@ -38,6 +38,8 @@ public class Hud extends AbstractSquareSprite {
         Matrix.setIdentityM(identityMatrix,0);
         setPos(-1,-1);
         Log.d(TAG, "HUD bounds: "+bounds.toShortString());
+        //Hud background on level 0.
+        setZVal(0);
     }
 
     public void draw(GL10 glUnused, float[] mvpMatrix) {

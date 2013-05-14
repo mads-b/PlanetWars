@@ -23,6 +23,7 @@ public class TextSprite extends AbstractSquareSprite {
     public TextSprite(Paint textPaint, Paint strokePaint) {
         this.textPaint = textPaint;
         this.strokePaint = strokePaint;
+        setZVal(-.1f);
     }
 
     public void changeText(GL10 glUnused, String text) {
