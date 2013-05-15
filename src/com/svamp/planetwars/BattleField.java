@@ -1,5 +1,6 @@
 package com.svamp.planetwars;
 
+import android.util.Log;
 import com.svamp.planetwars.network.ByteSerializeable;
 import com.svamp.planetwars.network.Player;
 import com.svamp.planetwars.sprite.StarSprite;
@@ -24,7 +25,7 @@ public class BattleField implements ByteSerializeable {
     // Also dependent on star size.
     private final static float ADD_SHIP_MULTIPLIER = .8f;
     //Maximum amount of ships to have before construction halts.
-    private final static int MAX_UNITS_FOR_BUILD = 30;
+    private final static int MAX_UNITS_FOR_BUILD = 0;
     private int tickNum=0;
 
 
@@ -58,6 +59,7 @@ public class BattleField implements ByteSerializeable {
         }
         //If we have actors, we have a battle!
         if(actors.size()==0) { return 0; }
+        Log.d(Fleet.class.getCanonicalName(),"Start battle. Home: "+homeFleet+" enemies: "+actors.toString());
         // A rotten battle for the home fleet: All attackers attack the home fleet!
         for(Fleet actor : actors.values()) {
             homeFleet.absorbDamageBy(dt, actor);
@@ -70,7 +72,7 @@ public class BattleField implements ByteSerializeable {
         if(firstFleet.isEmpty()) {
             actors.remove(firstPlayer);
         }
-
+        Log.d(Fleet.class.getCanonicalName(),"End battle. Home: "+homeFleet+" enemies: "+actors.toString());
         // If homeFleet is annihilated, the first enemy gets control over the star!
         if(homeFleet.isEmpty()) {
             actors.remove(firstPlayer);

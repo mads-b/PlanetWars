@@ -35,19 +35,6 @@ public class SpriteFactory {
     }
 
     /**
-     * Loads and prepares a sprite sheet from phone memory.
-     * @param glUnused Unused object to ensure method is called from GL thread.
-     * @param sheet Type of sheet required. @see SpriteSheetType
-     * @param sprite Sprite to register as "owner" of spritesheet.
-     * @return Spritesheet object ready for use.
-     */
-    public SpriteSheet makeSpriteSheet(GL10 glUnused, SpriteSheetType sheet,Sprite sprite) {
-        return new SpriteSheet(sprite,sheet.getAnimNum(),sheet.getRotNum(),
-                makeAndRegisterDrawable(glUnused, sheet.getId(), GLES20.GL_CLAMP_TO_EDGE));
-    }
-
-
-    /**
      * Fetches or imports the drawable needed, then loads it into GL memory.
      * @param glUnused Unused object to ensure method is called from GL thread.
      * @param id R.drawable id of image to import.

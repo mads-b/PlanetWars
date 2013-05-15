@@ -133,18 +133,18 @@ public class Hud extends HudSprite {
                     bss.setPos(-1,w * 0.65f);
                     bss.setSize(w * 0.7f, w * 0.2f);
                     addSprite(HudItem.BUILD_SELECTION, bss);
-                    SliderSprite sbs = new SliderSprite(source,HudItem.BLUE_SLIDER);
+                    SliderSprite sbs = new SliderSprite(source,HudItem.RED_SLIDER);
                     sbs.setPos(-1,w * 0.4f);
                     sbs.setSize(w * 0.7f, w * 0.2f);
-                    addSprite(HudItem.BLUE_SLIDER, sbs);
-                    SliderSprite sbs2 = new SliderSprite(source,HudItem.RED_SLIDER);
+                    addSprite(HudItem.RED_SLIDER, sbs);
+                    SliderSprite sbs2 = new SliderSprite(source,HudItem.GREEN_SLIDER);
                     sbs2.setPos(-1,w*0.15f);
                     sbs2.setSize(w * 0.7f, w * 0.2f);
-                    addSprite(HudItem.RED_SLIDER, sbs2);
-                    SliderSprite sbs3 = new SliderSprite(source,HudItem.GREEN_SLIDER);
+                    addSprite(HudItem.GREEN_SLIDER, sbs2);
+                    SliderSprite sbs3 = new SliderSprite(source,HudItem.BLUE_SLIDER);
                     sbs3.setPos(-1,-w*0.10f);
                     sbs3.setSize(w * 0.7f, w * 0.2f);
-                    addSprite(HudItem.GREEN_SLIDER, sbs3);
+                    addSprite(HudItem.BLUE_SLIDER, sbs3);
                 }
             }
             if(target!=null) {
@@ -186,7 +186,7 @@ public class Hud extends HudSprite {
         GameEvent event = new GameEvent(PackageHeader.FLEET_DISPATCHED,source.getOwnership());
         byte[] sentFleet = f.getSerialization();
         ByteBuffer buffer = ByteBuffer.allocate(8+sentFleet.length);
-        buffer.putInt(source.getElementHash()).put(sentFleet).putInt(target.getElementHash());
+        buffer.putInt(source.getElementHash()).putInt(target.getElementHash()).put(sentFleet);
         event.setPayload(buffer.array());
         gEngine.getClient().sendData(event.toByteArray());
     }

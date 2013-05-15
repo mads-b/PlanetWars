@@ -198,6 +198,7 @@ public class GameHost extends AbstractGameCommunicator {
                     if(tick % 10 == 0) { //Periodical ping.
                         GameEvent event = new GameEvent(PackageHeader.PING,null);
                         sendData(event.toByteArray());
+                        Log.d(GameHost.class.getCanonicalName(),"Time elapsed: "+TICK_INTERVAL_MS*tick/1000f);
                     }
                     if(starMap.isDirty()) { //Time for a starMap update.
                         GameEvent event = new GameEvent(PackageHeader.STAR_STATE_CHANGED,null);

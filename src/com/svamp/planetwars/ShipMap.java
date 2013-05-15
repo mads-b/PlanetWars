@@ -8,7 +8,6 @@ import com.svamp.planetwars.network.GameEvent;
 import com.svamp.planetwars.network.GameHost;
 import com.svamp.planetwars.network.PackageHeader;
 import com.svamp.planetwars.sprite.ShipSprite;
-import com.svamp.planetwars.sprite.SpriteSheetType;
 import com.svamp.planetwars.sprite.StarSprite;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -50,14 +49,11 @@ public class ShipMap implements DataPacketListener {
             case FLEET_DISPATCHED:
                 ByteBuffer buffer = ByteBuffer.wrap(packet.getPayload());
                 StarSprite source = starMap.getStarWithHash(buffer.getInt());
-                Fleet fleet = new Fleet(buffer);
                 StarSprite target = starMap.getStarWithHash(buffer.getInt());
-
+                Fleet fleet = new Fleet(buffer);
                 //Make new ship sprite. This is only eyecandy. No star states change from this sprite.
-                ShipSprite shipSprite = new ShipSprite(this,fleet, SpriteSheetType.FIGHTER_SPRITE);
-                shipSprite.setPos(
-                        source.getBounds().centerX()-shipSprite.getBounds().width()/2,
-                        source.getBounds().centerY()-shipSprite.getBounds().height()/2);
+                ShipSprite shipSprite = new ShipSprite(this,fleet);
+                shipSprite.setSrc(source);
                 shipSprite.setDest(target);
                 ships.add(shipSprite);
                 break;
@@ -65,7 +61,7 @@ public class ShipMap implements DataPacketListener {
     }
 
     /**
-     * Instruction from Host ordering a fleet to be sent.
+     * Instruction in Host ordering a fleet to be sent.
      * Validates the move and subtracts the fleet from source.
      * It's up to Host to give fleet to target star on arrival.
      * @param buffer ByteBuffer describing the action.
@@ -73,9 +69,9 @@ public class ShipMap implements DataPacketListener {
      */
     public boolean sendShips(ByteBuffer buffer) {
         StarSprite source = starMap.getStarWithHash(buffer.getInt());
+        StarSprite target = starMap.getStarWithHash(buffer.getInt());
         //Dummy fleet.
         Fleet fleet = new Fleet(buffer);
-        StarSprite target = starMap.getStarWithHash(buffer.getInt());
         //Source same as target? Not allowed!
         if(source.equals(target)) return false;
 
@@ -87,7 +83,7 @@ public class ShipMap implements DataPacketListener {
          * splitting out the fleet ordered to be sent, just return false.
          * Also, return false if this player has no fleet here.
          */
-        if(fleet.isSubsetOf(starFleet)) {
+        if(!fleet.isSubsetOf(starFleet)) {
             Log.d(TAG, "Error! Tried to send a starFleet the did not exist! Tried to send:" + fleet + " from fleet " + starFleet);
             return false;
         }

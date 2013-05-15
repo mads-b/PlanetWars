@@ -23,15 +23,15 @@ public class Fleet implements ByteSerializeable {
 
     /** Number of ships are floats to allow for ships to be partially destroyed.
      * All getters will round up this number to show number of actual ships.  */
-    private Ships redCrafts;
-    private Ships blueCrafts;
-    private Ships greenCrafts;
+    private final Ships redCrafts = new Ships(0);
+    private final Ships blueCrafts = new Ships(0);
+    private final Ships greenCrafts = new Ships(0);
 
     public Fleet(Player owner, float redCrafts, float blueCrafts, float greenCrafts) {
         this.owner=owner;
-        this.redCrafts = new Ships(redCrafts);
-        this.blueCrafts = new Ships(blueCrafts);
-        this.greenCrafts = new Ships(greenCrafts);
+        this.redCrafts.add(redCrafts);
+        this.blueCrafts.add(blueCrafts);
+        this.greenCrafts.add(greenCrafts);
     }
 
     public Fleet(ByteBuffer buffer) {
@@ -105,7 +105,7 @@ public class Fleet implements ByteSerializeable {
     /**
      * Check whether this fleet is a subset of the provided fleet
      * (it has less or equal quantities of all types of ships.)
-     * The method works with whole ships, and do not care about damage done to the fleet.
+     * The method works with whole = new Ship ships, and do not care about damage done to the fleet.
      * @param f Superset fleet to check
      * @return True if this fleet has less of every ship than the provided one.
      */
@@ -136,11 +136,9 @@ public class Fleet implements ByteSerializeable {
     @Override
     public void updateFromSerialization(ByteBuffer buffer) {
         owner = GameEngine.getPlayer(buffer.getInt());
-        redCrafts = new Ships(buffer.getFloat());
-        blueCrafts = new Ships(buffer.getFloat());
-        greenCrafts = new Ships(buffer.getFloat());
-
-        Log.d(Fleet.class.getCanonicalName(),"updated. "+toString());
+        redCrafts.set(buffer.getFloat());
+        blueCrafts.set(buffer.getFloat());
+        greenCrafts.set(buffer.getFloat());
     }
 
     @Override
@@ -181,6 +179,7 @@ public class Fleet implements ByteSerializeable {
         private short getNum() { return (short) FloatMath.ceil(shipNum); }
         private void add(Ships s) { shipNum += s.shipNum;}
         private void add(float q) { shipNum += q;}
+        private void set(float q) { shipNum = q;}
         private void subtract(Ships s) {shipNum = Math.max(0,shipNum-s.shipNum);}
 
         /**
@@ -190,9 +189,15 @@ public class Fleet implements ByteSerializeable {
          * @return Damage left over because number of ships reached 0.
          */
         private float damage(float dmg,float multiplier) {
-            float hpRemaining = shipNum*SHIP_HP-dmg*multiplier;
-            shipNum = Math.max(0, hpRemaining*SHIP_HP);
-            return -Math.min(0,hpRemaining/multiplier);
+            //Damage done is either the entire HP pool, or the total damage.
+            float damageDone = Math.min(shipNum*SHIP_HP,dmg*multiplier);
+
+            shipNum -= damageDone/SHIP_HP;
+            return dmg - damageDone;
+        }
+
+        public String toString() {
+            return "[Ships: "+shipNum+"]";
         }
     }
 }

@@ -30,12 +30,16 @@ public class GameEngine implements DataPacketListener {
     //Our networker
     private final GameClient communicator;
 
+    private static final String TAG = GameEngine.class.getCanonicalName();
+
     public GameEngine(GameClient communicator) {
         curPlayer=communicator.getPlayer();
         players.put(curPlayer.getElementHash(),curPlayer);
         players.put(Player.getNeutral().getElementHash(),Player.getNeutral());
         for(Player player : communicator.getPeers())
             players.put(player.getElementHash(),player);
+
+        Log.d(TAG,"Built Player database: "+players.toString());
 
         //Make GameEngine receive game events
         communicator.registerListener(this);
@@ -107,7 +111,10 @@ public class GameEngine implements DataPacketListener {
      * @return The player on this device.
      */
     public static Player getPlayer() { return curPlayer; }
-    public static Player getPlayer(int hash) { return players.get(hash); }
+    public static Player getPlayer(int hash) {
+        if(!players.containsKey(hash)) throw new IllegalArgumentException("Error! player with hash "+hash+" not found in the following collection:"+players.toString());
+        return players.get(hash);
+    }
     public static Collection<Player> getPlayers() { return players.values(); }
 
     @Override

@@ -29,6 +29,7 @@ class GameRenderer implements GLSurfaceView.Renderer {
     //Time between updates, in milliseconds.
     private static final long UPDATE_INTERVAL_MS = 70;
     private long startTime = System.currentTimeMillis();
+    private long dtElapsed = 0;
 
     //state of game (Running or Paused).
     int state = RUNNING;
@@ -76,14 +77,17 @@ class GameRenderer implements GLSurfaceView.Renderer {
         // Timer block to limit framerate.
         long endTime = System.currentTimeMillis();
         long dt = endTime - startTime;
-        if (dt < UPDATE_INTERVAL_MS)
+        dtElapsed+=dt;
+        if (dt < UPDATE_INTERVAL_MS) {
             try {
-                Thread.sleep(UPDATE_INTERVAL_MS - dt);
+                Thread.sleep(UPDATE_INTERVAL_MS-dt);
             } catch (InterruptedException ignored) { }
+        }
         startTime = System.currentTimeMillis();
+        if(Math.random()<.01) Log.d(TAG,"CLient time elapsed:"+dtElapsed);
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        gEngine.update(dt/1000f);
+        gEngine.update((UPDATE_INTERVAL_MS-dt)/1000f);
         gEngine.draw(gl, pvMatrix);
     }
 

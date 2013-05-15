@@ -23,7 +23,7 @@ public class GameClient extends AbstractGameCommunicator {
     private Player curPlayer = new Player((byte) 1);
     //List of all players except ours.
     private final Set<Player> peers = new HashSet<Player>();
-    private final List<DataPacketListener> listeners = Collections.synchronizedList(new ArrayList<DataPacketListener>());
+    private final Set<DataPacketListener> listeners = Collections.synchronizedSet(new HashSet<DataPacketListener>());
 
     private static final String TAG = GameClient.class.getCanonicalName();
 
