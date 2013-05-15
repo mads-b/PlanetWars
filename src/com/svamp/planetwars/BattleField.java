@@ -59,7 +59,6 @@ public class BattleField implements ByteSerializeable {
         }
         //If we have actors, we have a battle!
         if(actors.size()==0) { return 0; }
-        Log.d(Fleet.class.getCanonicalName(),"Start battle. Home: "+homeFleet+" enemies: "+actors.toString());
         // A rotten battle for the home fleet: All attackers attack the home fleet!
         for(Fleet actor : actors.values()) {
             homeFleet.absorbDamageBy(dt, actor);
@@ -72,7 +71,6 @@ public class BattleField implements ByteSerializeable {
         if(firstFleet.isEmpty()) {
             actors.remove(firstPlayer);
         }
-        Log.d(Fleet.class.getCanonicalName(),"End battle. Home: "+homeFleet+" enemies: "+actors.toString());
         // If homeFleet is annihilated, the first enemy gets control over the star!
         if(homeFleet.isEmpty()) {
             actors.remove(firstPlayer);

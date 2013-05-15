@@ -29,7 +29,6 @@ class GameRenderer implements GLSurfaceView.Renderer {
     //Time between updates, in milliseconds.
     private static final long UPDATE_INTERVAL_MS = 70;
     private long startTime = System.currentTimeMillis();
-    private long dtElapsed = 0;
 
     //state of game (Running or Paused).
     int state = RUNNING;
@@ -71,24 +70,28 @@ class GameRenderer implements GLSurfaceView.Renderer {
         remakePvMatrix();
     }
 
+    private long dtAcc = System.currentTimeMillis();
     @Override
     public void onDrawFrame(GL10 gl) {
-        //Matrix.rotateM(viewMatrix,0,-.5f,.0f,.0f,1);
-        // Timer block to limit framerate.
+        dtAcc += UPDATE_INTERVAL_MS;
+        if(Math.random()<0.1f)Log.d(TAG,"Internal time is off by "+(System.currentTimeMillis()-dtAcc)+"ms.");
+        dtAcc = System.currentTimeMillis();
+
+
         long endTime = System.currentTimeMillis();
-        long dt = endTime - startTime;
-        dtElapsed+=dt;
+        long dt = endTime-startTime;
+        // Timer block to limit framerate.
         if (dt < UPDATE_INTERVAL_MS) {
             try {
                 Thread.sleep(UPDATE_INTERVAL_MS-dt);
             } catch (InterruptedException ignored) { }
-        }
-        startTime = System.currentTimeMillis();
-        if(Math.random()<.01) Log.d(TAG,"CLient time elapsed:"+dtElapsed);
+        } else { Log.d(TAG, "Frame dropped"); }
 
+        //Matrix.rotateM(viewMatrix,0,-.5f,.0f,.0f,1);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        gEngine.update((UPDATE_INTERVAL_MS-dt)/1000f);
+        gEngine.update((UPDATE_INTERVAL_MS)/1000f);
         gEngine.draw(gl, pvMatrix);
+        startTime = System.currentTimeMillis();
     }
 
 

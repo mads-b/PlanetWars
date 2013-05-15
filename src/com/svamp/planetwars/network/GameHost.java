@@ -181,7 +181,7 @@ public class GameHost extends AbstractGameCommunicator {
         private int tick=0;
         private State state = State.ROAMING;
 
-        private final static int TICK_INTERVAL_MS = 200;
+        private final static int TICK_INTERVAL_MS = 70;
 
         @Override
         public void run() {
@@ -195,10 +195,9 @@ public class GameHost extends AbstractGameCommunicator {
                 /*Start of new tick:*/
                     starMap.update(TICK_INTERVAL_MS / 1000f);
                     shipMap.update(TICK_INTERVAL_MS / 1000f);
-                    if(tick % 10 == 0) { //Periodical ping.
+                    if(tick % 30 == 0) { //Periodical ping.
                         GameEvent event = new GameEvent(PackageHeader.PING,null);
                         sendData(event.toByteArray());
-                        Log.d(GameHost.class.getCanonicalName(),"Time elapsed: "+TICK_INTERVAL_MS*tick/1000f);
                     }
                     if(starMap.isDirty()) { //Time for a starMap update.
                         GameEvent event = new GameEvent(PackageHeader.STAR_STATE_CHANGED,null);
