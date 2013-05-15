@@ -14,10 +14,10 @@ import java.nio.ShortBuffer;
 /**
  * A slightly more implemented version of the AbstractSprite.
  * This class only accepts sprites using one texture mapped on a quad.
- * The class implements Comparable to allow sorting on Z-level.
  */
 public abstract class AbstractSquareSprite extends AbstractSprite {
     private int texHandle = -1;
+    private float[] color;
 
 
     private static final String TAG = AbstractSquareSprite.class.getCanonicalName();
@@ -43,6 +43,10 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
             GLES20.glVertexAttribPointer(mTexCoordinateHandle, 2, GLES20.GL_FLOAT, false,
                     0, textureOrderBuffer);
         }
+        //Switch to the color we use, if applicable.
+        if(color != null) {
+            GLES20.glUniform4f(mColorHandle, color[0], color[1], color[2], color[3]);
+        }
 
         // Enable a handle to the triangle vertices
         GLES20.glEnableVertexAttribArray(mPositionHandle);
@@ -61,6 +65,11 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+        //Set color to opaque white again
+        if(color != null) {
+            GLES20.glUniform4f(mColorHandle, 1,1,1,1);
+        }
+
         //Disable texture, if applicable.
         if(texHandle != -1) {
             GLES20.glDisableVertexAttribArray(mTexCoordinateHandle);
@@ -73,6 +82,10 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
      */
     protected void setTexture(int texHandle) {
         this.texHandle = texHandle;
+    }
+
+    protected void setColor(float[] color) {
+        this.color = color;
     }
 
 
@@ -97,9 +110,9 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
     private static int mMVPMatrixHandle;
     /** This will be used to pass in model position information. */
     private static int mPositionHandle;
-    protected static int mProgramHandle = -1;
-    protected static int mColorHandle;
-    protected static int mTexCoordinateHandle;
+    private static int mProgramHandle = -1;
+    private static int mColorHandle;
+    private static int mTexCoordinateHandle;
 
     /**
      * Creates a program with a vertex and a frag shader.
@@ -136,7 +149,4 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
         if(mProgramHandle == -1) throw new IllegalStateException("Error! Shaders and program not initialized!");
         return mProgramHandle;
     }
-
-
-
 }

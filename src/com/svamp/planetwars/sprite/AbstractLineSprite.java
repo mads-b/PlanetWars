@@ -19,6 +19,7 @@ public abstract class AbstractLineSprite extends AbstractSprite {
     private static final String TAG = AbstractLineSprite.class.getCanonicalName();
     private final int size;
     private final FloatBuffer vertexBuffer;
+    private float[] color;
 
     AbstractLineSprite(Collection<Vector> line) {
         this.size = line.size();
@@ -29,9 +30,16 @@ public abstract class AbstractLineSprite extends AbstractSprite {
         vertexBuffer.rewind();
     }
 
+    protected void setColor(float[] color) {
+        this.color = color;
+    }
+
 
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         if(mProgramHandle == -1) throw new IllegalStateException("Error! Initialize the shaders for this class!");
+        if(color != null) {
+            GLES20.glUniform4f(mColorHandle, color[0], color[1], color[2], color[3]);
+        }
         //Handle to line positions
         GLES20.glEnableVertexAttribArray(mPositionHandle);
         //Prepare line coordinate data
@@ -42,6 +50,9 @@ public abstract class AbstractLineSprite extends AbstractSprite {
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+        if(color != null) {
+            GLES20.glUniform4f(mColorHandle, 1,1,1,1);
+        }
     }
 
 
@@ -49,8 +60,8 @@ public abstract class AbstractLineSprite extends AbstractSprite {
     private static int mMVPMatrixHandle;
     /** This will be used to pass in model position information. */
     private static int mPositionHandle;
-    static int mProgramHandle = -1;
-    static int mColorHandle;
+    private static int mProgramHandle = -1;
+    private static int mColorHandle;
 
     /**
      * Creates a program with a vertex and a frag shader.

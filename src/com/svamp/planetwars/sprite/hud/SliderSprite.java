@@ -6,24 +6,27 @@ import android.opengl.GLES20;
 import com.svamp.planetwars.Fleet;
 import com.svamp.planetwars.R;
 import com.svamp.planetwars.math.Vector;
-import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.SpriteFactory;
 import com.svamp.planetwars.sprite.StarSprite;
 
 import javax.microedition.khronos.opengles.GL10;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Slider used to select quantity of ships to use.
  */
 public class SliderSprite extends AbstractHudSprite {
+    //Remember old slider values for this class:
+    private final static Map<Hud.HudItem,Short> oldValues = new HashMap<Hud.HudItem, Short>();
+
     private int glTexId = -1;
     protected final StarSprite star;
     private final Hud.HudItem type;
 
-    private Slider slider;
+    private final Slider slider;
 
-    private Paint textStyle = new Paint();
     private final TextSprite text;
     // Toggle used to refresh text sprite when data has changed.
     private boolean textDirty = true;
@@ -34,11 +37,11 @@ public class SliderSprite extends AbstractHudSprite {
         this.type=type;
         this.slider = new Slider(type.getColor());
         // Set up text for this slider:
+        Paint textStyle = new Paint();
         textStyle.setColor(Color.BLACK);
-        textStyle.setAntiAlias(true);
         textStyle.setTextSize(30);
 
-        text = new TextSprite(textStyle,textStyle);
+        text = new TextSprite(textStyle, textStyle);
         setZVal(-.2f);
         text.setZVal(-.11f);
         slider.setZVal(-.1f);
@@ -64,17 +67,19 @@ public class SliderSprite extends AbstractHudSprite {
     @Override
     public void update(float dt) {
         //Number of fighters/bombers might change. Make sure we're updated.
-        if(type == Hud.HudItem.BLUE_SLIDER || type == Hud.HudItem.RED_SLIDER) {
-            Fleet homeFleet = star.getBattleField().getHomeFleet();
-            int val = type == Hud.HudItem.BLUE_SLIDER
-                    ? homeFleet.getBlueCraftNum()
-                    : homeFleet.getRedCraftNum();
+        Fleet homeFleet = star.getBattleField().getHomeFleet();
+        int val = type == Hud.HudItem.RED_SLIDER  ? homeFleet.getRedCrafts()
+                : type == Hud.HudItem.BLUE_SLIDER ? homeFleet.getBlueCrafts()
+                : homeFleet.getGreenCrafts();
 
-            // Maximum value has changed!
-            if(slider.maxVal != val) {
-                slider.setMaxVal(val);
-                textDirty = true;
-            }
+        // Maximum value has changed!
+        if(slider.maxVal != val) {
+            slider.setMaxVal(val);
+            textDirty = true;
+            // To be safe, set cur val to cached val.
+            short oldVal = oldValues.containsKey(type) ? oldValues.get(type) : 0;
+            slider.incrementValue(oldVal-slider.curVal);
+
         }
     }
 
@@ -100,16 +105,15 @@ public class SliderSprite extends AbstractHudSprite {
         return spriteList;
     }
 
-    public void setVal(short val) {
-        slider.incrementValue(val - slider.curVal);
-    }
-
     public void move(Vector amount) {
         //Increment slider accordingly
         int oldVal = getVal();
         slider.incrementValue(slider.maxVal*amount.x/bounds.width());
-        if(oldVal - getVal() != 0)
+        if(oldVal - getVal() != 0) {
             textDirty = true;
+            //Cache this new value:
+            oldValues.put(type,getVal());
+        }
     }
 
     public short getVal() {
@@ -119,13 +123,12 @@ public class SliderSprite extends AbstractHudSprite {
     protected Slider getSlider() { return slider; }
 
     protected class Slider extends AbstractHudSprite {
-        private final float[] color;
         private float maxWidth;
         private int maxVal = 0;
         private float curVal = 0;
 
         public Slider(int color) {
-            this.color = SpriteFactory.splitColor(color);
+            setColor(SpriteFactory.splitColor(color));
         }
 
         public void setMaxWidth(float maxWidth) {
@@ -138,22 +141,12 @@ public class SliderSprite extends AbstractHudSprite {
 
         /**
          * Specify fill rate of the slider.
-         * @param val How much to increment the slider with. Cannot exceed interval 0-1.
+         * @param val How much to increment the slider with. Cannot exceed interval 0-maxVal
          */
         public void incrementValue(float val) {
             curVal += val;
             curVal = Math.min(maxVal,Math.max(0,curVal));
             this.setSize(maxWidth*Math.round(curVal)/maxVal,bounds.height());
-        }
-
-        @Override
-        public void draw(GL10 glUnused, float[] mvpMatrix) {
-            //Apply color!
-            GLES20.glUniform4f(mColorHandle, color[0], color[1], color[2], color[3]);
-            // Draw vertices.
-            super.draw(glUnused, mvpMatrix);
-            //Set color to former value
-            GLES20.glUniform4f(mColorHandle, 1, 1, 1, 1);
         }
     }
 }

@@ -2,6 +2,7 @@ package com.svamp.planetwars.sprite;
 
 import android.opengl.GLES20;
 import com.svamp.planetwars.BattleField;
+import com.svamp.planetwars.Fleet;
 import com.svamp.planetwars.GameEngine;
 import com.svamp.planetwars.StarMap;
 import com.svamp.planetwars.network.Player;
@@ -24,7 +25,7 @@ public class StarSprite extends AbstractSquareSprite {
     //Every star is a battlefield. Some stars have battlefields with multiple actors within.
     private final BattleField battleField = new BattleField(this);
 
-    private int buildType=0;
+    private Fleet.ShipType buildType = Fleet.ShipType.RED_SHIP;
 
     private StarMap hostMap;
 
@@ -82,7 +83,7 @@ public class StarSprite extends AbstractSquareSprite {
 
         //Put current and max HP. 4*2 bytes.
         buffer.put(ancestor)
-                .put((byte) buildType)
+                .put((byte) buildType.ordinal())
                 .put(_battleField);
         return buffer.array();
     }
@@ -90,7 +91,7 @@ public class StarSprite extends AbstractSquareSprite {
     @Override
     public void updateFromSerialization(ByteBuffer buffer) {
         super.updateFromSerialization(buffer); //Update ancestor
-        buildType = buffer.get(); //Selected craft to build.
+        buildType = Fleet.ShipType.getByOrdinal(buffer.get()); //Selected craft to build.
         battleField.updateFromSerialization(buffer);
     }
 
@@ -129,10 +130,10 @@ public class StarSprite extends AbstractSquareSprite {
     }
 
 
-    public void setBuildType(int buildType) {
+    public void setBuildType(Fleet.ShipType buildType) {
         this.buildType=buildType;
     }
-    public int getBuildType() { return buildType; }
+    public Fleet.ShipType getBuildType() { return buildType; }
 
     public String toString() {
         return "[StarSprite at:"+bounds.centerX()+"x"+bounds.centerY()+"]";

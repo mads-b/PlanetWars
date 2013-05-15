@@ -34,6 +34,7 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
     private boolean rebuildStarList = true;
     //Subset of stars having changed state. Only host fills in this.
     private List<Sprite> dirtyStars = new ArrayList<Sprite>();
+    private final Object dirtyStarMonitor = new Object();
     private byte dirtyStarsSeverity = 0;
 
     //Ownership blob.
@@ -100,7 +101,7 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
      * @param star The StarSprite who is cause for the change.
      */
     public void fireStarStateChanged(int cause,Sprite star) {
-        synchronized (dirtyStars) {
+        synchronized (dirtyStarMonitor) {
             if(cause == 0) return;
             dirtyStars.add(star);
             dirtyStarsSeverity = (byte) Math.max(dirtyStarsSeverity,cause);
@@ -117,7 +118,7 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
      */
     @Override
     public byte[] getSerialization() {
-        synchronized (dirtyStars) {
+        synchronized (dirtyStarMonitor) {
             ByteBuffer buffer = ByteBuffer.allocate(getSerializedSize());
             buffer.putShort((short) (dirtyStars.size()));
             buffer.put(dirtyStarsSeverity);
@@ -161,7 +162,7 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
 
     @Override
     public int getSerializedSize() {
-        synchronized (dirtyStars) {
+        synchronized (dirtyStarMonitor) {
             int size=3; //First short, plus one "severity byte"
             for(Sprite item : dirtyStars) {
                 size += ((StarSprite) item).getSerializedSize();

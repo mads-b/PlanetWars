@@ -22,7 +22,7 @@ public interface Sprite {
 
     /**
      * Makes time pass for this sprite
-     * @param dt Time passed since last call to this method. Milliseconds.
+     * @param dt Time passed since last call to this method. Seconds.
      */
     void update (float dt);
 

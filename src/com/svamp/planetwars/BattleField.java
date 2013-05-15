@@ -12,11 +12,8 @@ import java.util.Map;
  * Instantiated by a star to keep track of all the units attacking each other.
  */
 public class BattleField implements ByteSerializeable {
-    private final static float BOMBER_DAMAGE = 1;
-    private final static float FIGHTER_DAMAGE = 1;
-
-    //Only calculate battles every tick.
-    private final static float TICK_LENGTH = 0.5f;
+    //Only calculate battles every tick.(seconds)
+    private final static float TICK_LENGTH = 1f;
 
     private final StarSprite star;
     private Fleet homeFleet;
@@ -25,7 +22,7 @@ public class BattleField implements ByteSerializeable {
 
     //Number of ticks required before a ship is constructed and added to the home fleet.
     // Also dependent on star size.
-    private final static int ADD_SHIP_MULTIPLIER = 800;
+    private final static float ADD_SHIP_MULTIPLIER = .8f;
     //Maximum amount of ships to have before construction halts.
     private final static int MAX_UNITS_FOR_BUILD = 30;
     private int tickNum=0;
@@ -52,18 +49,34 @@ public class BattleField implements ByteSerializeable {
         if(tickNum % (int)(ADD_SHIP_MULTIPLIER/star.getBounds().width())==0
                 && homeFleet.getOwner()!=Player.getNeutral()) { //Time to make a ship. Only non-neutral players make ships.
             tickNum=0;
-            if(homeFleet.getRedCraftNum()+homeFleet.getBlueCraftNum()<MAX_UNITS_FOR_BUILD) {
-                if(star.getBuildType()==0) //Fighter
-                    homeFleet.add(new Fleet(homeFleet.getOwner(),(short)1,(short)0,(short)0));
-                if(star.getBuildType()==1) //Bomber
-                    homeFleet.add(new Fleet(homeFleet.getOwner(),(short)0,(short)1,(short)0));
-                //No battle? Submit changes anyway.
+            if(homeFleet.sum() < MAX_UNITS_FOR_BUILD) {
+                homeFleet.add(star.getBuildType(),1);
+
+                //No battle? Submit changes anyway. We've got more ships after all.
                 if(actors.size()==0) return 1;
             }
         }
         //If we have actors, we have a battle!
         if(actors.size()==0) { return 0; }
+        // A rotten battle for the home fleet: All attackers attack the home fleet!
+        for(Fleet actor : actors.values()) {
+            homeFleet.absorbDamageBy(dt, actor);
+        }
+        // The home fleet always attacks the first actor. Sucks to be him
+        Player firstPlayer = actors.keySet().iterator().next();
+        Fleet firstFleet = actors.get(firstPlayer);
+        firstFleet.absorbDamageBy(dt,homeFleet);
+        // If the first fleet is obliterated by this attack, delete him from the list of actors.
+        if(firstFleet.isEmpty()) {
+            actors.remove(firstPlayer);
+        }
 
+        // If homeFleet is annihilated, the first enemy gets control over the star!
+        if(homeFleet.isEmpty()) {
+            actors.remove(firstPlayer);
+            setHomeFleet(firstFleet);
+            return 2;
+        }
         return 1;
     }
 

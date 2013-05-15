@@ -25,10 +25,10 @@ public class BuildSelectionSprite extends SliderSprite {
     public void move(Vector amount) {
         super.move(amount);
         //Inform star if state changed.
-        if(star.getBuildType()!=Math.round(0)) {
-            star.setBuildType(Math.round(0));
-            callback.buildSelectionChanged(star);
-        }
+        //if(star.getBuildType()!=Math.round(0)) {
+        //    star.setBuildType(Math.round(0));
+        //    callback.buildSelectionChanged(star);
+        //}
     }
 
     public void setCallback(Hud hud) {

@@ -57,6 +57,7 @@ public class Vector {
     }
 
     public boolean equals(Object o) {
+        if(!(o instanceof Vector)) return false;
         //Hacky equals. Uses ulp to check if difference is significant
         float dist = distanceToSq((Vector) o);
         return o != null && dist<=5*Math.ulp(dist);

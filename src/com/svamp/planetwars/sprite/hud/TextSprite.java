@@ -23,7 +23,7 @@ public class TextSprite extends AbstractHudSprite {
     private String curText = "";
     private int glTexId = -1;
 
-    private Rect tmp = new Rect();
+    private final Rect tmp = new Rect();
 
     public TextSprite(Paint textPaint, Paint strokePaint) {
         this.textPaint = textPaint;

@@ -39,7 +39,7 @@ public abstract class AbstractHudSprite extends AbstractSquareSprite implements 
         List<AbstractHudSprite> spriteList = new ArrayList<AbstractHudSprite>();
         spriteList.add(this);
         return spriteList;
-    };
+    }
 
     @Override
     public int compareTo(AbstractHudSprite s) {

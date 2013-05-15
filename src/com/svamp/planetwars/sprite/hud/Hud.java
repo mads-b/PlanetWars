@@ -108,17 +108,10 @@ public class Hud extends AbstractHudSprite {
     public void selectionChanged() {
         synchronized (hudSprites) {
             float w = bounds.width();
-            float h = bounds.height();
             //Get sprites
             StarSprite source = gEngine.getLastSelectedSource();
             StarSprite target = gEngine.getLastSelectedTarget();
-            short fighterNum = 0;
-            short bomberNum = 0;
-            //If sliders exist, store state:
-            if(hudSprites.containsKey(HudItem.RED_SLIDER)) {
-                fighterNum = ((SliderSprite)hudSprites.get(HudItem.RED_SLIDER)).getVal();
-                bomberNum = ((SliderSprite)hudSprites.get(HudItem.BLUE_SLIDER)).getVal();
-            }
+
             //Rebuild:
             hudSprites.clear();
             zDepthCache.clear();
@@ -128,25 +121,22 @@ public class Hud extends AbstractHudSprite {
                 sss.setPos(-1,0);
                 sss.setSize(w * 0.3f, w * 0.3f);
                 sss.loadStar(source);
-                addSprite(HudItem.SOURCE_SELECTION_ICON,sss);
+                addSprite(HudItem.SOURCE_SELECTION_ICON, sss);
 
                 if(source.getOwnership()==GameEngine.getPlayer()) {
-                    BuildSelectionSprite bss = new BuildSelectionSprite(source,HudItem.BUILD_SELECTION);
-                    bss.setPos(-1, w * 0.65f);
-                    bss.setSize(w * 0.7f, w * 0.2f);
-                    bss.setVal((short) source.getBuildType());
-                    bss.setCallback(this);
-                    addSprite(HudItem.BUILD_SELECTION,bss);
-                    SliderSprite sbs2 = new SliderSprite(source,HudItem.BLUE_SLIDER);
-                    sbs2.setPos(-1,w * 0.4f);
-                    sbs2.setSize(w * 0.7f, w * 0.2f);
-                    sbs2.setVal(bomberNum);
-                    addSprite(HudItem.BLUE_SLIDER,sbs2);
-                    SliderSprite sbs = new SliderSprite(source,HudItem.RED_SLIDER);
-                    sbs.setPos(-1,w*0.15f);
+                    //TODO: Build selection sprite
+                    SliderSprite sbs = new SliderSprite(source,HudItem.BLUE_SLIDER);
+                    sbs.setPos(-1,w * 0.4f);
                     sbs.setSize(w * 0.7f, w * 0.2f);
-                    sbs.setVal(fighterNum);
-                    addSprite(HudItem.RED_SLIDER,sbs);
+                    addSprite(HudItem.BLUE_SLIDER, sbs);
+                    SliderSprite sbs2 = new SliderSprite(source,HudItem.RED_SLIDER);
+                    sbs2.setPos(-1,w*0.15f);
+                    sbs2.setSize(w * 0.7f, w * 0.2f);
+                    addSprite(HudItem.RED_SLIDER, sbs2);
+                    SliderSprite sbs3 = new SliderSprite(source,HudItem.GREEN_SLIDER);
+                    sbs3.setPos(-1,-w*0.10f);
+                    sbs3.setSize(w * 0.7f, w * 0.2f);
+                    addSprite(HudItem.GREEN_SLIDER, sbs3);
                 }
             }
             if(target!=null) {
@@ -154,7 +144,7 @@ public class Hud extends AbstractHudSprite {
                 sss.setPos(-1+w*0.7f,-1);
                 sss.setSize(w*0.3f,w*0.3f);
                 sss.loadStar(target);
-                addSprite(HudItem.TARGET_SELECTION_ICON,sss);
+                addSprite(HudItem.TARGET_SELECTION_ICON, sss);
             }
 
             //Attack button, if source and target are selected.
@@ -167,9 +157,9 @@ public class Hud extends AbstractHudSprite {
                     text = "Transfer units";
                 }
                 ButtonSprite bs = new ButtonSprite(text, this,source);
-                bs.setPos(-1,-w*0.1f);
+                bs.setPos(-1,-w*0.35f);
                 bs.setSize(w*0.9f,w*0.2f);
-                addSprite(HudItem.LAUNCH_BUTTON,bs);
+                addSprite(HudItem.LAUNCH_BUTTON, bs);
             }
         }
     }
@@ -179,9 +169,11 @@ public class Hud extends AbstractHudSprite {
      * @param star Source star to do operations on.
      */
     public void buttonPushed(StarSprite star) {
-        short fighterNum = ((SliderSprite)hudSprites.get(HudItem.RED_SLIDER)).getVal();
-        short bomberNum = ((SliderSprite)hudSprites.get(HudItem.BLUE_SLIDER)).getVal();
-        Fleet f = new Fleet(star.getOwnership(),fighterNum,bomberNum,(short)0);
+        short redNum = ((SliderSprite)hudSprites.get(HudItem.RED_SLIDER)).getVal();
+        short blueNum = ((SliderSprite)hudSprites.get(HudItem.BLUE_SLIDER)).getVal();
+        short greenNum = ((SliderSprite)hudSprites.get(HudItem.GREEN_SLIDER)).getVal();
+
+        Fleet f = new Fleet(star.getOwnership(),redNum,blueNum,greenNum);
 
         GameEvent event = new GameEvent(PackageHeader.FLEET_DISPATCHED,star.getOwnership());
         int startStar = gEngine.getLastSelectedSource().getElementHash();
@@ -197,7 +189,7 @@ public class Hud extends AbstractHudSprite {
         GameEvent event = new GameEvent(PackageHeader.NEW_BUILD_ORDERS,GameEngine.getPlayer());
         ByteBuffer buffer = ByteBuffer.allocate(5);
         buffer.putInt(star.getElementHash())
-                .put((byte) star.getBuildType());
+                .put((byte) star.getBuildType().ordinal());
         event.setPayload(buffer.array());
         gEngine.getClient().sendData(event.toByteArray());
     }
@@ -228,10 +220,11 @@ public class Hud extends AbstractHudSprite {
         TARGET_SELECTION_ICON(0),
         BLUE_SLIDER(Color.BLUE),
         RED_SLIDER(Color.RED),
+        GREEN_SLIDER(Color.GREEN),
         BUILD_SELECTION(Color.GRAY),
         LAUNCH_BUTTON(0);
 
-        private int color;
+        private final int color;
         HudItem(int c) {
             color = c;
         }

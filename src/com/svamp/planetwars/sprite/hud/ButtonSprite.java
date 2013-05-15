@@ -15,7 +15,6 @@ import java.util.List;
 /**
  */
 public class ButtonSprite extends AbstractHudSprite {
-    private final Paint buttonPaint = new Paint();
     private final String buttonText;
     private final TextSprite textSprite;
     private final Hud hud;
@@ -26,11 +25,12 @@ public class ButtonSprite extends AbstractHudSprite {
         this.buttonText = buttonText;
         this.hud = hud;
         this.star = star;
+        Paint buttonPaint = new Paint();
         buttonPaint.setColor(Color.BLACK);
         buttonPaint.setAntiAlias(true);
         buttonPaint.setTextSize(30);
 
-        textSprite = new TextSprite(buttonPaint,buttonPaint);
+        textSprite = new TextSprite(buttonPaint, buttonPaint);
         setZVal(-.12f);
         textSprite.setZVal(-.22f);
     }

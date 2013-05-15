@@ -1,6 +1,7 @@
 package com.svamp.planetwars.network;
 
 import android.util.Log;
+import com.svamp.planetwars.Fleet;
 import com.svamp.planetwars.ShipMap;
 import com.svamp.planetwars.StarMap;
 
@@ -102,7 +103,7 @@ public class GameHost extends AbstractGameCommunicator {
                 break;
             case NEW_BUILD_ORDERS: //Client requested that we should build a new type of ship. Update, don't retransmit.
                 ByteBuffer buf = ByteBuffer.wrap(event.getPayload());
-                starMap.getStarWithHash(buf.getInt()).setBuildType(buf.get());
+                starMap.getStarWithHash(buf.getInt()).setBuildType(Fleet.ShipType.getByOrdinal(buf.get()));
                 break;
             case REQUEST_GAME_START:
                 peers.get(peerAddress).gameStartRequested=true;

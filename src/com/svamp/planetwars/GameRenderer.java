@@ -26,7 +26,7 @@ class GameRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = GameRenderer.class.getCanonicalName();
 
-    //Time between updates, in seconds.
+    //Time between updates, in milliseconds.
     private static final long UPDATE_INTERVAL_MS = 70;
     private long startTime = System.currentTimeMillis();
 

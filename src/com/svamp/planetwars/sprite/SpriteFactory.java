@@ -73,7 +73,7 @@ public class SpriteFactory {
      * @param text Text to write to texture
      * @param style The style of the text
      * @param strokeStyle Style of the stroke.
-     * @return
+     * @return gl Bound texture handle
      */
     public int makeAndRegisterText(GL10 glUnused, String text, Paint style, Paint strokeStyle) {
         //Measure text to see how big a bitmap we need.

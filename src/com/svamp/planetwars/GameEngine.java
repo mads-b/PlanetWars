@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameEngine implements DataPacketListener {
-    private StarMap starMap;
-    private ShipMap shipMap;
-    private Hud hud;
+    private final StarMap starMap;
+    private final ShipMap shipMap;
+    private final Hud hud;
     private StarSprite lastSelectedSource;
     private StarSprite lastSelectedTarget;
 
@@ -75,7 +75,6 @@ public class GameEngine implements DataPacketListener {
     /**
      * Click. Set the star clicked to "target"
      * @param pos Position vector in world coordinates.
-     * @return true if HUD was touched, false otherwise.
      */
     public void touched(Vector pos) {
         StarSprite star = starMap.getStarAtPosition(pos);
