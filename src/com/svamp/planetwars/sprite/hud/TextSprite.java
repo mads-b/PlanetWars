@@ -3,14 +3,9 @@ package com.svamp.planetwars.sprite.hud;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Log;
-import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import com.svamp.planetwars.sprite.SpriteFactory;
 
 import javax.microedition.khronos.opengles.GL10;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Standard quad for drawing text.
@@ -18,7 +13,7 @@ import java.util.List;
  * width of the text it is asked to represent. The reason for this is to enforce the
  * aspect ratio of the text, to avoid it being stretched.
  */
-public class TextSprite extends AbstractHudSprite {
+public class TextSprite extends HudSprite {
     private final Paint textPaint, strokePaint;
     private String curText = "";
     private int glTexId = -1;
@@ -54,5 +49,9 @@ public class TextSprite extends AbstractHudSprite {
     public RectF getBounds() {
         if(curText.isEmpty()) throw new UnsupportedOperationException("Cannot get bounds when text is unset!");
         return super.getBounds();
+    }
+
+    public boolean isUninitialized() {
+        return curText.isEmpty();
     }
 }

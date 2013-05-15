@@ -54,6 +54,7 @@ class GameRenderer implements GLSurfaceView.Renderer {
         /* Initialize Shaders for sprites here: */
         AbstractSquareSprite.initShaders(gl);
         AbstractLineSprite.initShaders(gl);
+        Log.d(TAG, GLES20.glGetString(GLES20.GL_EXTENSIONS).replace(" ","\n"));
     }
 
     @Override

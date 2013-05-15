@@ -12,7 +12,7 @@ import java.util.List;
  * Note: Because these sprites need to be ordered according to Z-level,
  * their draw methods MUST contain the draw calls to the base sprite ONLY!
  */
-public abstract class AbstractHudSprite extends AbstractSquareSprite implements Comparable<AbstractHudSprite> {
+public class HudSprite extends AbstractSquareSprite implements Comparable<HudSprite> {
     private float zVal;
 
     public void setZVal(float zVal) {
@@ -35,14 +35,14 @@ public abstract class AbstractHudSprite extends AbstractSquareSprite implements 
      * Any composite sprites must extend this method.
      * @return All the sprites contained within this sprite, including itself.
      */
-    public Collection<AbstractHudSprite> getSprites() {
-        List<AbstractHudSprite> spriteList = new ArrayList<AbstractHudSprite>();
+    public Collection<HudSprite> getSprites() {
+        List<HudSprite> spriteList = new ArrayList<HudSprite>();
         spriteList.add(this);
         return spriteList;
     }
 
     @Override
-    public int compareTo(AbstractHudSprite s) {
+    public int compareTo(HudSprite s) {
         // The small addition is here to ensure no two sprites evaluate as equal.
         return (int)(10000*(zVal-s.zVal+0.0001f));
     }

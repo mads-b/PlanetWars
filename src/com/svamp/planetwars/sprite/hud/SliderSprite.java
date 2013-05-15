@@ -17,10 +17,10 @@ import java.util.Map;
 /**
  * Slider used to select quantity of ships to use.
  */
-public class SliderSprite extends AbstractHudSprite {
+public class SliderSprite extends HudSprite {
     //Remember old slider values for this class:
     private final static Map<Hud.HudItem,Short> oldValues = new HashMap<Hud.HudItem, Short>();
-
+    //Ensures we only load this texture once.
     private int glTexId = -1;
     protected final StarSprite star;
     private final Hud.HudItem type;
@@ -91,15 +91,14 @@ public class SliderSprite extends AbstractHudSprite {
         slider.setMaxWidth(bounds.width());
 
         // Put text to the left of this sprite's bounds.
-        text.setPos(bounds.right,bounds.top);
+        text.setPos(bounds.right,bounds.centerY()-bounds.height()/6);
         // Text doesn't care about width.
         text.setSize(1337,bounds.height()/3);
-
     }
 
     @Override
-    public Collection<AbstractHudSprite> getSprites() {
-        Collection<AbstractHudSprite> spriteList = super.getSprites();
+    public Collection<HudSprite> getSprites() {
+        Collection<HudSprite> spriteList = super.getSprites();
         spriteList.addAll(text.getSprites());
         spriteList.addAll(slider.getSprites());
         return spriteList;
@@ -122,7 +121,7 @@ public class SliderSprite extends AbstractHudSprite {
 
     protected Slider getSlider() { return slider; }
 
-    protected class Slider extends AbstractHudSprite {
+    protected class Slider extends HudSprite {
         private float maxWidth;
         private int maxVal = 0;
         private float curVal = 0;

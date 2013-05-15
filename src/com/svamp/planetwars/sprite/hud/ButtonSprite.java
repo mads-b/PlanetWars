@@ -5,26 +5,27 @@ import android.graphics.Paint;
 import android.opengl.GLES20;
 import com.svamp.planetwars.R;
 import com.svamp.planetwars.sprite.SpriteFactory;
-import com.svamp.planetwars.sprite.StarSprite;
 
 import javax.microedition.khronos.opengles.GL10;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  */
-public class ButtonSprite extends AbstractHudSprite {
+public class ButtonSprite extends HudSprite {
     private final String buttonText;
     private final TextSprite textSprite;
     private final Hud hud;
-    private final StarSprite star;
-    private int texId = -1;
 
-    public ButtonSprite(String buttonText,Hud hud,StarSprite star) {
+    private int glTexId = -1;
+
+    /**
+     * Constructor for a button with text.
+     * @param buttonText Text to write on button
+     * @param hud Hud to call when button is pressed.
+     */
+    public ButtonSprite(String buttonText,Hud hud) {
         this.buttonText = buttonText;
         this.hud = hud;
-        this.star = star;
         Paint buttonPaint = new Paint();
         buttonPaint.setColor(Color.BLACK);
         buttonPaint.setAntiAlias(true);
@@ -38,7 +39,11 @@ public class ButtonSprite extends AbstractHudSprite {
     @Override
     public void draw(GL10 glUnused, float[] mvcMatrix) {
         // First-time preload
-        if(texId == -1) {
+        if(glTexId == -1) {
+            glTexId = SpriteFactory.getInstance().makeAndRegisterDrawable(glUnused, R.drawable.planetwars_button, GLES20.GL_CLAMP_TO_EDGE);
+            setTexture(glTexId);
+        }
+        if(textSprite.isUninitialized()) {
             textSprite.changeText(glUnused,buttonText);
             // Text doesn't care about width.
             textSprite.setSize(1337,bounds.height()/2);
@@ -47,24 +52,20 @@ public class ButtonSprite extends AbstractHudSprite {
                     bounds.centerX()-textSprite.getBounds().width()/2,
                     bounds.centerY()-textSprite.getBounds().height()/2);
 
-            texId = SpriteFactory.getInstance().makeAndRegisterDrawable(glUnused, R.drawable.planetwars_button, GLES20.GL_CLAMP_TO_EDGE);
-            setTexture(texId);
         }
         super.draw(glUnused,mvcMatrix);
     }
 
+    /**
+     * Base method just triggers Hud.attackOrTransfer().
+     */
     public void push() {
-        hud.buttonPushed(star);
-    }
-
-    public void updateVertices() {
-        super.updateVertices();
-
+        hud.attackOrTransfer();
     }
 
     @Override
-    public Collection<AbstractHudSprite> getSprites() {
-        Collection<AbstractHudSprite> spriteList = super.getSprites();
+    public Collection<HudSprite> getSprites() {
+        Collection<HudSprite> spriteList = super.getSprites();
         spriteList.addAll(textSprite.getSprites());
         return spriteList;
     }

@@ -80,7 +80,7 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
      * Apply a texture to this sprite.
      * @param texHandle OpenGL handle to texture already uploaded. Or -1 to disable texture.
      */
-    protected void setTexture(int texHandle) {
+    public void setTexture(int texHandle) {
         this.texHandle = texHandle;
     }
 

@@ -25,10 +25,10 @@ import java.util.TreeSet;
 /**
  * Heads-up-display for game. Used by gameEngine.
  */
-public class Hud extends AbstractHudSprite {
+public class Hud extends HudSprite {
 
     private final Map<HudItem,Sprite> hudSprites = new HashMap<HudItem, Sprite>();
-    private final SortedSet<AbstractHudSprite> zDepthCache = new TreeSet<AbstractHudSprite>().descendingSet();
+    private final SortedSet<HudSprite> zDepthCache = new TreeSet<HudSprite>().descendingSet();
     private final GameEngine gEngine;
     private int glTexId = -1;
     /* Identity matrix to be sent to draw calls to ensure HUD is not translated according to MVP-matrix. */
@@ -95,10 +95,15 @@ public class Hud extends AbstractHudSprite {
      */
     public boolean move(Vector start, Vector dist) {
         Sprite b = getHudItemAt(start);
-        if(b!=null && b instanceof SliderSprite) {
+        if(b == null) return false;
+        if(b instanceof SliderSprite) {
             ((SliderSprite) b).move(dist);
-            return true;
         }
+        if(b instanceof BuildSelectionSprite) {
+            ((BuildSelectionSprite) b).move(dist);
+        }
+
+
         return contains(start);
     }
 
@@ -124,7 +129,10 @@ public class Hud extends AbstractHudSprite {
                 addSprite(HudItem.SOURCE_SELECTION_ICON, sss);
 
                 if(source.getOwnership()==GameEngine.getPlayer()) {
-                    //TODO: Build selection sprite
+                    BuildSelectionSprite bss = new BuildSelectionSprite(source,this);
+                    bss.setPos(-1,w * 0.65f);
+                    bss.setSize(w * 0.7f, w * 0.2f);
+                    addSprite(HudItem.BUILD_SELECTION, bss);
                     SliderSprite sbs = new SliderSprite(source,HudItem.BLUE_SLIDER);
                     sbs.setPos(-1,w * 0.4f);
                     sbs.setSize(w * 0.7f, w * 0.2f);
@@ -156,7 +164,7 @@ public class Hud extends AbstractHudSprite {
                 if(target.getOwnership()==GameEngine.getPlayer()) {
                     text = "Transfer units";
                 }
-                ButtonSprite bs = new ButtonSprite(text, this,source);
+                ButtonSprite bs = new ButtonSprite(text, this);
                 bs.setPos(-1,-w*0.35f);
                 bs.setSize(w*0.9f,w*0.2f);
                 addSprite(HudItem.LAUNCH_BUTTON, bs);
@@ -166,30 +174,29 @@ public class Hud extends AbstractHudSprite {
 
     /**
      * Callback from a buttonSprite when it is pushed.
-     * @param star Source star to do operations on.
      */
-    public void buttonPushed(StarSprite star) {
+    public void attackOrTransfer() {
         short redNum = ((SliderSprite)hudSprites.get(HudItem.RED_SLIDER)).getVal();
         short blueNum = ((SliderSprite)hudSprites.get(HudItem.BLUE_SLIDER)).getVal();
         short greenNum = ((SliderSprite)hudSprites.get(HudItem.GREEN_SLIDER)).getVal();
+        StarSprite source = gEngine.getLastSelectedSource();
+        StarSprite target = gEngine.getLastSelectedTarget();
+        Fleet f = new Fleet(source.getOwnership(),redNum,blueNum,greenNum);
 
-        Fleet f = new Fleet(star.getOwnership(),redNum,blueNum,greenNum);
-
-        GameEvent event = new GameEvent(PackageHeader.FLEET_DISPATCHED,star.getOwnership());
-        int startStar = gEngine.getLastSelectedSource().getElementHash();
+        GameEvent event = new GameEvent(PackageHeader.FLEET_DISPATCHED,source.getOwnership());
         byte[] sentFleet = f.getSerialization();
-        int targetStar = gEngine.getLastSelectedTarget().getElementHash();
         ByteBuffer buffer = ByteBuffer.allocate(8+sentFleet.length);
-        buffer.putInt(startStar).put(sentFleet).putInt(targetStar);
+        buffer.putInt(source.getElementHash()).put(sentFleet).putInt(target.getElementHash());
         event.setPayload(buffer.array());
         gEngine.getClient().sendData(event.toByteArray());
     }
 
-    public void buildSelectionChanged(StarSprite star) {
+    public void buildSelectionChanged(Fleet.ShipType type) {
+        StarSprite source = gEngine.getLastSelectedSource();
         GameEvent event = new GameEvent(PackageHeader.NEW_BUILD_ORDERS,GameEngine.getPlayer());
         ByteBuffer buffer = ByteBuffer.allocate(5);
-        buffer.putInt(star.getElementHash())
-                .put((byte) star.getBuildType().ordinal());
+        buffer.putInt(source.getElementHash())
+                .put((byte) type.ordinal());
         event.setPayload(buffer.array());
         gEngine.getClient().sendData(event.toByteArray());
     }
@@ -205,13 +212,13 @@ public class Hud extends AbstractHudSprite {
         return null;
     }
 
-    private void addSprite(HudItem item, AbstractHudSprite sprite) {
+    private void addSprite(HudItem item, HudSprite sprite) {
         hudSprites.put(item,sprite);
         zDepthCache.addAll(sprite.getSprites());
     }
 
     @Override
-    public Collection<AbstractHudSprite> getSprites() {
+    public Collection<HudSprite> getSprites() {
         return zDepthCache;
     }
 

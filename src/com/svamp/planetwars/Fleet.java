@@ -102,6 +102,20 @@ public class Fleet implements ByteSerializeable {
     public Player getOwner() { return owner; }
     public boolean isEmpty() { return sum() == 0; }
 
+    /**
+     * Check whether this fleet is a subset of the provided fleet
+     * (it has less or equal quantities of all types of ships.)
+     * The method works with whole ships, and do not care about damage done to the fleet.
+     * @param f Superset fleet to check
+     * @return True if this fleet has less of every ship than the provided one.
+     */
+    public boolean isSubsetOf(Fleet f) {
+        return redCrafts.getNum() <= f.redCrafts.getNum() &&
+                greenCrafts.getNum() <= f.greenCrafts.getNum() &&
+                blueCrafts.getNum() <= f.blueCrafts.getNum();
+
+    }
+
     @Override
     public byte[] getSerialization() {
         /*
@@ -151,8 +165,8 @@ public class Fleet implements ByteSerializeable {
 
     public enum ShipType {
         RED_SHIP,
-        BLUE_SHIP,
-        GREEN_SHIP;
+        GREEN_SHIP,
+        BLUE_SHIP;
 
         public static ShipType getByOrdinal(int ord) {
             return ShipType.values()[ord];
