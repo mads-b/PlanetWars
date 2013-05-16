@@ -182,10 +182,14 @@ public class GameHost extends AbstractGameCommunicator {
         private State state = State.ROAMING;
 
         private final static int TICK_INTERVAL_MS = 70;
-
+        private long dtAcc = System.currentTimeMillis();
         @Override
         public void run() {
             while(isRunning) {
+                //dtAcc += TICK_INTERVAL_MS;
+                //if(Math.random()<0.1f)Log.d(TAG,"Internal time is off by "+(System.currentTimeMillis()-dtAcc)+"ms.");
+                //dtAcc = System.currentTimeMillis();
+                long startTime = System.currentTimeMillis();
                 if(state==State.ROAMING) {
                     //TODO: broadcast host address.
                 }
@@ -205,9 +209,12 @@ public class GameHost extends AbstractGameCommunicator {
                         sendData(event.toByteArray());
                     }
                 }
-
+                long dt = System.currentTimeMillis() -startTime;
                 try {
-                    Thread.sleep(TICK_INTERVAL_MS);
+                    if(dt < TICK_INTERVAL_MS) {
+                    //Enforce tick intervals regardless of other processing times.
+                    Thread.sleep(TICK_INTERVAL_MS-dt);
+                    }
                 } catch (InterruptedException ignored) {}
                 tick++;
             }

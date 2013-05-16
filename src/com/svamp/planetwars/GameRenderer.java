@@ -73,9 +73,10 @@ class GameRenderer implements GLSurfaceView.Renderer {
     private long dtAcc = System.currentTimeMillis();
     @Override
     public void onDrawFrame(GL10 gl) {
-        dtAcc += UPDATE_INTERVAL_MS;
-        if(Math.random()<0.1f)Log.d(TAG,"Internal time is off by "+(System.currentTimeMillis()-dtAcc)+"ms.");
-        dtAcc = System.currentTimeMillis();
+        //The following three lines are for timing testing.
+        //dtAcc += UPDATE_INTERVAL_MS;
+        //if(Math.random()<0.1f)Log.d(TAG,"Internal time is off by "+(System.currentTimeMillis()-dtAcc)+"ms.");
+        //dtAcc = System.currentTimeMillis();
 
 
         long endTime = System.currentTimeMillis();
@@ -86,12 +87,11 @@ class GameRenderer implements GLSurfaceView.Renderer {
                 Thread.sleep(UPDATE_INTERVAL_MS-dt);
             } catch (InterruptedException ignored) { }
         } else { Log.d(TAG, "Frame dropped"); }
-
+        startTime = System.currentTimeMillis();
         //Matrix.rotateM(viewMatrix,0,-.5f,.0f,.0f,1);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         gEngine.update((UPDATE_INTERVAL_MS)/1000f);
         gEngine.draw(gl, pvMatrix);
-        startTime = System.currentTimeMillis();
     }
 
 
