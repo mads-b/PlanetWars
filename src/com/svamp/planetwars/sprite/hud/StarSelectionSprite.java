@@ -10,27 +10,25 @@ import javax.microedition.khronos.opengles.GL10;
  * It wraps a StarSprite, and uses it to draw.
  */
 public class StarSelectionSprite extends HudSprite {
-    private Bitmap star;
-
     private StarSprite realStar;
-    private float subWidth;
+    private boolean textLeft;
+    //Cached values from the star (ordered red-green-blue)
+    private int[] thisShips = new int[3];
+    private int[] enemyShips = new int[3];
 
-    public StarSelectionSprite() {
+
+    /**
+     * Constructor for the StarSelectionSprite
+     * @param s StarSprite this Hud item represents.
+     * @param textLeft Whether the text should be to the left or the right of the image frame.
+     *                 True sets text to the left.
+     */
+    public StarSelectionSprite(StarSprite s, boolean textLeft) {
+        this.realStar = s;
+        this.textLeft = textLeft;
     }
-
-    public void loadStar(StarSprite s) {
-        //this.star = s.getImage();
-        realStar=s;
-    }
-
 
     public void draw(GL10 glUnused, float[] mvcMatrix) {
-
-    }
-
-    @Override
-    public void setSize(float width, float height) {
-        super.setSize(width,height);
-        subWidth=width*0.2f;
+        //TODO: Some cool visualization of the star here.
     }
 }

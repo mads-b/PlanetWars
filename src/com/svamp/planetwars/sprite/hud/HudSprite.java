@@ -17,6 +17,7 @@ public class HudSprite extends AbstractSquareSprite implements Comparable<HudSpr
 
     public void setZVal(float zVal) {
         this.zVal = zVal;
+        updateVertices();
     }
 
     @Override

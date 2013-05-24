@@ -122,10 +122,9 @@ public class Hud extends HudSprite {
             zDepthCache.clear();
 
             if(source!=null) {
-                StarSelectionSprite sss = new StarSelectionSprite();
+                StarSelectionSprite sss = new StarSelectionSprite(source,false);
                 sss.setPos(-1,0);
                 sss.setSize(w * 0.3f, w * 0.3f);
-                sss.loadStar(source);
                 addSprite(HudItem.SOURCE_SELECTION_ICON, sss);
 
                 if(source.getOwnership()==GameEngine.getPlayer()) {
@@ -148,10 +147,9 @@ public class Hud extends HudSprite {
                 }
             }
             if(target!=null) {
-                StarSelectionSprite sss = new StarSelectionSprite();
+                StarSelectionSprite sss = new StarSelectionSprite(target,true);
                 sss.setPos(-1+w*0.7f,-1);
                 sss.setSize(w*0.3f,w*0.3f);
-                sss.loadStar(target);
                 addSprite(HudItem.TARGET_SELECTION_ICON, sss);
             }
 

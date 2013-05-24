@@ -3,6 +3,7 @@ package com.svamp.planetwars.sprite.hud;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.opengl.GLES20;
+import android.util.Log;
 import com.svamp.planetwars.R;
 import com.svamp.planetwars.sprite.SpriteFactory;
 
@@ -32,8 +33,20 @@ public class ButtonSprite extends HudSprite {
         buttonPaint.setTextSize(30);
 
         textSprite = new TextSprite(buttonPaint, buttonPaint);
+        textSprite.changeText(buttonText);
         setZVal(-.12f);
         textSprite.setZVal(-.22f);
+    }
+
+    @Override
+    protected void updateVertices() {
+        super.updateVertices();
+        // Text doesn't care about width.
+        textSprite.setSize(1337,bounds.height()/2);
+        // Center text on button.
+        textSprite.setPos(
+                bounds.centerX()-textSprite.getBounds().width()/2,
+                bounds.centerY()-textSprite.getBounds().height()/2);
     }
 
     @Override
@@ -42,16 +55,6 @@ public class ButtonSprite extends HudSprite {
         if(glTexId == -1) {
             glTexId = SpriteFactory.getInstance().makeAndRegisterDrawable(glUnused, R.drawable.planetwars_button, GLES20.GL_CLAMP_TO_EDGE);
             setTexture(glTexId);
-        }
-        if(textSprite.isUninitialized()) {
-            textSprite.changeText(glUnused,buttonText);
-            // Text doesn't care about width.
-            textSprite.setSize(1337,bounds.height()/2);
-            // Center text on button.
-            textSprite.setPos(
-                    bounds.centerX()-textSprite.getBounds().width()/2,
-                    bounds.centerY()-textSprite.getBounds().height()/2);
-
         }
         super.draw(glUnused,mvcMatrix);
     }

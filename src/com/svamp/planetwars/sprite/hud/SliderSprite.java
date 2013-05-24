@@ -28,9 +28,6 @@ public class SliderSprite extends HudSprite {
     private final Slider slider;
 
     private final TextSprite text;
-    // Toggle used to refresh text sprite when data has changed.
-    private boolean textDirty = true;
-
 
     public SliderSprite(StarSprite star, Hud.HudItem type) {
         this.star=star;
@@ -49,12 +46,6 @@ public class SliderSprite extends HudSprite {
 
     @Override
     public void draw(GL10 glUnused, float[] mvpMatrix) {
-        // Remake text if info changed.
-        if(textDirty) {
-            text.changeText(null, (int)slider.curVal+"/"+slider.maxVal);
-            textDirty = false;
-        }
-
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
         if(glTexId == -1) {
             glTexId = SpriteFactory.getInstance()
@@ -75,11 +66,12 @@ public class SliderSprite extends HudSprite {
         // Maximum value has changed!
         if(slider.maxVal != val) {
             slider.setMaxVal(val);
-            textDirty = true;
             // To be safe, set cur val to cached val.
             short oldVal = oldValues.containsKey(type) ? oldValues.get(type) : 0;
             slider.incrementValue(oldVal-slider.curVal);
 
+            // Set new text.
+            text.changeText((int)slider.curVal+"/"+slider.maxVal);
         }
     }
 
@@ -109,7 +101,8 @@ public class SliderSprite extends HudSprite {
         int oldVal = getVal();
         slider.incrementValue(slider.maxVal*amount.x/bounds.width());
         if(oldVal - getVal() != 0) {
-            textDirty = true;
+            // Set new text.
+            text.changeText((int)slider.curVal+"/"+slider.maxVal);
             //Cache this new value:
             oldValues.put(type,getVal());
         }
@@ -119,9 +112,7 @@ public class SliderSprite extends HudSprite {
         return (short) Math.round(slider.curVal);
     }
 
-    protected Slider getSlider() { return slider; }
-
-    protected class Slider extends HudSprite {
+    private class Slider extends HudSprite {
         private float maxWidth;
         private int maxVal = 0;
         private float curVal = 0;
@@ -136,6 +127,7 @@ public class SliderSprite extends HudSprite {
 
         public void setMaxVal(int maxVal) {
             this.maxVal = maxVal;
+            this.curVal = Math.min(maxVal,curVal);
         }
 
         /**
