@@ -1,11 +1,11 @@
-package com.svamp.planetwars;
+package com.svamp.planetwars.opengl;
+
+import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
-
-import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 // This class shows how to use multisampling. To use this, call
 //   myGLSurfaceView.setEGLConfigChooser(new MultisampleConfigChooser());

@@ -9,6 +9,8 @@ import android.view.MotionEvent;
 import com.svamp.planetwars.math.TouchCallback;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.network.GameClient;
+import com.svamp.planetwars.opengl.GameRenderer;
+import com.svamp.planetwars.opengl.MultisampleConfigChooser;
 import com.svamp.planetwars.sprite.hud.Hud;
 
 public class StarView extends GLSurfaceView implements TouchCallback {

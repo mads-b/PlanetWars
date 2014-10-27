@@ -1,7 +1,6 @@
 package com.svamp.planetwars;
 
 import android.util.FloatMath;
-import android.util.Log;
 import android.view.MotionEvent;
 import com.svamp.planetwars.math.TouchCallback;
 import com.svamp.planetwars.math.Vector;

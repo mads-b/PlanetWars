@@ -5,6 +5,7 @@ import com.svamp.planetwars.BattleField;
 import com.svamp.planetwars.Fleet;
 import com.svamp.planetwars.GameEngine;
 import com.svamp.planetwars.StarMap;
+import com.svamp.planetwars.opengl.TextureTool;
 import com.svamp.planetwars.network.Player;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -55,7 +56,7 @@ public class StarSprite extends AbstractSquareSprite {
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
         if(glTexId == -1) {
-            glTexId = SpriteFactory.getInstance()
+            glTexId = TextureTool.getInstance()
                     .makeAndRegisterDrawable(glUnused, drawableTexId, GLES20.GL_CLAMP_TO_EDGE);
             super.setTexture(glTexId);
         }

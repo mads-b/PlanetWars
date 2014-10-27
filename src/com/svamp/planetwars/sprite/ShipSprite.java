@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import com.svamp.planetwars.Fleet;
 import com.svamp.planetwars.R;
 import com.svamp.planetwars.ShipMap;
+import com.svamp.planetwars.opengl.TextureTool;
 import com.svamp.planetwars.math.Vector;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -40,7 +41,7 @@ public class ShipSprite extends AbstractSquareSprite {
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
         if(glTexId == -1) {
-            glTexId = SpriteFactory.getInstance()
+            glTexId = TextureTool.getInstance()
                     .makeAndRegisterDrawable(glUnused, R.drawable.ic_launcher, GLES20.GL_CLAMP_TO_EDGE);
             super.setTexture(glTexId);
         }

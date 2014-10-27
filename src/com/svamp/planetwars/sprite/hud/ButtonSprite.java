@@ -3,9 +3,8 @@ package com.svamp.planetwars.sprite.hud;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.opengl.GLES20;
-import android.util.Log;
 import com.svamp.planetwars.R;
-import com.svamp.planetwars.sprite.SpriteFactory;
+import com.svamp.planetwars.opengl.TextureTool;
 
 import javax.microedition.khronos.opengles.GL10;
 import java.util.Collection;
@@ -53,7 +52,7 @@ public class ButtonSprite extends HudSprite {
     public void draw(GL10 glUnused, float[] mvcMatrix) {
         // First-time preload
         if(glTexId == -1) {
-            glTexId = SpriteFactory.getInstance().makeAndRegisterDrawable(glUnused, R.drawable.planetwars_button, GLES20.GL_CLAMP_TO_EDGE);
+            glTexId = TextureTool.getInstance().makeAndRegisterDrawable(glUnused, R.drawable.planetwars_button, GLES20.GL_CLAMP_TO_EDGE);
             setTexture(glTexId);
         }
         super.draw(glUnused,mvcMatrix);

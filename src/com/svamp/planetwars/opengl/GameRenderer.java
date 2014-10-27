@@ -1,4 +1,4 @@
-package com.svamp.planetwars;
+package com.svamp.planetwars.opengl;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import com.svamp.planetwars.GameEngine;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.sprite.AbstractLineSprite;
 import com.svamp.planetwars.sprite.AbstractSquareSprite;
@@ -13,16 +14,13 @@ import com.svamp.planetwars.sprite.AbstractSquareSprite;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-@SuppressWarnings("ALL")
-class GameRenderer implements GLSurfaceView.Renderer {
+public class GameRenderer implements GLSurfaceView.Renderer {
     private final GameEngine gEngine;
     private final float[] projMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private final float[] pvMatrix = new float[16];
     private final float[] pvMatrixInverse = new float[16];
     private final Vector screendims = new Vector(0,0);
-
-    private float scalation;
 
     private static final String TAG = GameRenderer.class.getCanonicalName();
 
@@ -66,6 +64,8 @@ class GameRenderer implements GLSurfaceView.Renderer {
         float ratio = (float) width / height;
         Log.d(TAG,"Ratio: "+ratio);
         Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1, 1, 1f, 5f);
+        // Set the active texture unit to texture unit 0.
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
         remakePvMatrix();
     }

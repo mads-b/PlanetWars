@@ -1,6 +1,5 @@
 package com.svamp.planetwars;
 
-import android.util.Log;
 import com.svamp.planetwars.network.ByteSerializeable;
 import com.svamp.planetwars.network.Player;
 import com.svamp.planetwars.sprite.StarSprite;

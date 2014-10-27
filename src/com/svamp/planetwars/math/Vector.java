@@ -56,18 +56,6 @@ public class Vector {
         return x+";"+y;
     }
 
-    public boolean equals(Object o) {
-        if(!(o instanceof Vector)) return false;
-        //Hacky equals. Uses ulp to check if difference is significant
-        float dist = distanceToSq((Vector) o);
-        return o != null && dist<=5*Math.ulp(dist);
-    }
-
-    public int hashCode() {
-        //Hacky hashcode. 0 significant decimals.
-        return (int) (Math.floor(x)*1000+Math.floor(y));
-    }
-
     /*
      * Takes a vector (radius,angle) and converts it to the (x,y) version
      */

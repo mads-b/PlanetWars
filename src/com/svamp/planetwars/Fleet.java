@@ -1,7 +1,6 @@
 package com.svamp.planetwars;
 
 import android.util.FloatMath;
-import android.util.Log;
 import com.svamp.planetwars.network.ByteSerializeable;
 import com.svamp.planetwars.network.Player;
 

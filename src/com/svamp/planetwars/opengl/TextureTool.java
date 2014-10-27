@@ -1,4 +1,4 @@
-package com.svamp.planetwars.sprite;
+package com.svamp.planetwars.opengl;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -18,20 +18,23 @@ import javax.microedition.khronos.opengles.GL10;
  * Singleton factory class to ask for images!
  * Must be initialized prior to use!
  */
-public class SpriteFactory {
-    //Eager singleton init.
-    private static final SpriteFactory instance = new SpriteFactory();
-    private Resources res;
+public class TextureTool {
+    private static TextureTool instance;
+    private final Resources res;
     //Map from R.drawable resources to OpenGL texture reference.
     private final SparseIntArray cache = new SparseIntArray();
 
-    private final static String TAG = SpriteFactory.class.getCanonicalName();
+    private final static String TAG = TextureTool.class.getCanonicalName();
 
-    public static SpriteFactory getInstance() {
+    public static TextureTool getInstance() {
         return instance;
     }
-    public void initialize(Resources res) {
-        this.res=res;
+    public static void initialize(Resources res) {
+        instance = new TextureTool(res);
+    }
+
+    private TextureTool(Resources res) {
+        this.res = res;
     }
 
     /**
@@ -79,11 +82,13 @@ public class SpriteFactory {
     /**
      * Deletes a texture from GL memory, given its texture handle
      * @param glUnused Unused GL object to ensure method is called from GL thread.
-     * @param textureHandle OpenGL texture handle to the texture to be deleted.
+     * @param textureHandles OpenGL texture handles to the texture to be deleted.
      */
-    public void deleteTextureFromGL(GL10 glUnused, int textureHandle) {
-        GLES20.glDeleteTextures(0,new int[] {textureHandle},0);
-        cache.delete(cache.indexOfValue(textureHandle));
+    public void deleteTextureFromGL(GL10 glUnused, int ... textureHandles) {
+        GLES20.glDeleteTextures(0, textureHandles,0);
+        for(int handle : textureHandles) {
+            cache.delete(cache.indexOfValue(handle));
+        }
     }
 
     /**

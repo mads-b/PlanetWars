@@ -3,7 +3,6 @@ package com.svamp.planetwars.sprite;
 import android.opengl.GLES20;
 import android.util.Log;
 import com.svamp.planetwars.R;
-import com.svamp.planetwars.ShaderTool;
 import com.svamp.planetwars.math.Vector;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -45,7 +44,7 @@ public abstract class AbstractLineSprite extends AbstractSprite {
         //Prepare line coordinate data
         GLES20.glVertexAttribPointer(0,2,GLES20.GL_FLOAT,false,0,vertexBuffer);
         //Draw lines:
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP,0,size);
+        GLES20.glDrawArrays(GLES20.GL_LINES,0,size);
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
         // Disable vertex array
@@ -67,10 +66,14 @@ public abstract class AbstractLineSprite extends AbstractSprite {
      * Creates a program with a vertex and a frag shader.
      */
     public static void initShaders(GL10 glUnused) {
-        int vertexShaderHandle = ShaderTool.loadShader(glUnused, GLES20.GL_VERTEX_SHADER, R.string.shader_line_vert);
-        int fragmentShaderHandle = ShaderTool.loadShader(glUnused, GLES20.GL_FRAGMENT_SHADER, R.string.shader_line_frag);
+        final ShaderTool shaderTool = ShaderTool.getInstance();
+        final int vertexShaderHandle = shaderTool
+                .loadShader(glUnused, GLES20.GL_VERTEX_SHADER, R.string.shader_line_vert);
+        final int fragmentShaderHandle = shaderTool
+                .loadShader(glUnused, GLES20.GL_FRAGMENT_SHADER, R.string.shader_line_frag);
         // Create a program object and store the handle to it.
-        mProgramHandle = ShaderTool.makeProgram(glUnused,vertexShaderHandle,fragmentShaderHandle);
+        mProgramHandle = shaderTool
+                .makeProgram(glUnused,vertexShaderHandle,fragmentShaderHandle);
 
         // Set program handles. These will later be used to pass in values to the program.
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "MVPMatrix");

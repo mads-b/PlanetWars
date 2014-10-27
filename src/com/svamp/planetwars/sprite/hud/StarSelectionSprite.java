@@ -1,6 +1,5 @@
 package com.svamp.planetwars.sprite.hud;
 
-import android.graphics.Bitmap;
 import com.svamp.planetwars.sprite.StarSprite;
 
 import javax.microedition.khronos.opengles.GL10;

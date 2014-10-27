@@ -7,9 +7,7 @@ import com.svamp.planetwars.sprite.StarSprite;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MetaBalls {
     private final static int RESOLUTION = 80;
@@ -28,9 +26,9 @@ public class MetaBalls {
         squares = new MarchingSquares(new PowerFunction(spheres),dimensions,RESOLUTION);
     }
 
-    public Collection<List<Vector>> getBlobsFor(Player p) {
+    public Collection<Vector> getBlobsFor(Player p) {
         long start = System.currentTimeMillis();
-        Collection<List<Vector>> result = squares.computeLines(0.2f,p.getElementHash());
+        Collection<Vector> result = squares.computeLines(0.2f,p.getElementHash());
         Log.d("com.svamp.math.MetaBalls","Computed blobs for "+p.getPlayerName()+" in "+(System.currentTimeMillis()-start)+"ms.");
         return result;
     }
@@ -117,9 +115,8 @@ public class MetaBalls {
                 }
             }
         }
-        private Collection<List<Vector>> computeLines(float isoValue, int sphereSetId) {
-            Map<Vector,Vector> line = new HashMap<Vector,Vector>();
-            Map<Vector,Vector> line2 = new HashMap<Vector,Vector>();
+        private Collection<Vector> computeLines(float isoValue, int sphereSetId) {
+            List<Vector> lineSegments = new ArrayList<Vector>();
 
             /* Fill the grid with the scalar values from the power function */
             for(int y = 0; y<resolution; y++){
@@ -181,43 +178,12 @@ public class MetaBalls {
                     for (int i=0; lineTable[tableIndex][i]!=-1; i+=2){
                         Vector lineStart = lerpPoints[lineTable[tableIndex][i]-4];
                         Vector lineEnd = lerpPoints[lineTable[tableIndex][i + 1]-4];
-                        line.put(lineStart,lineEnd);
-                        line2.put(lineEnd,lineStart);
+                        lineSegments.add(lineStart);
+                        lineSegments.add(lineEnd);
                     }
                 }
             }
-            List<List<Vector>> blobs = new ArrayList<List<Vector>>();
-            while(!line.isEmpty()) {
-                List<Vector> blob = new ArrayList<Vector>();
-                // Add random point to blob.
-                blob.add(line.keySet().iterator().next());
-                // Get successor:
-                Vector successor = line.remove(blob.get(0));
-                // While successor isn't the first point in the blob (indicating full circle)
-                boolean isFullCircle=true;
-                while(!successor.equals(blob.get(0))) {
-                    blob.add(successor);
-                    successor = line.remove(successor);
-                    if(successor != null && successor != blob.get(blob.size()-2)) {
-                        line2.remove(successor);
-                        continue;
-                    }
-                    successor = line2.remove(successor);
-                    if(successor != null && successor != blob.get(blob.size()-2)) {
-                        line.remove(successor);
-                        continue;
-                    }
-                    // No successor found, break. This means we haven't gone full circle,
-                    // implying that the blob ends out of bounds!
-                    // Check if there is more blob prior to the first blob element.
-                    Log.d("com.svamp.math.MetaBalls","Non-circular blob! Result might be ugly..");
-                    isFullCircle=false;
-                    break;
-                }
-                if(isFullCircle) blob.add(blob.get(0));
-                blobs.add(blob);
-            }
-            return blobs;
+            return lineSegments;
         }
 
         private Vector lerp(float isoValue, Vector p0, Vector p1,float sv0, float sv1) {

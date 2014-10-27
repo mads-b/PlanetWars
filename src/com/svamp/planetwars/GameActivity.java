@@ -23,7 +23,7 @@ import com.svamp.planetwars.network.GameEvent;
 import com.svamp.planetwars.network.GameHost;
 import com.svamp.planetwars.network.PackageHeader;
 import com.svamp.planetwars.network.Player;
-import com.svamp.planetwars.sprite.SpriteFactory;
+import com.svamp.planetwars.opengl.TextureTool;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -42,8 +42,8 @@ public class GameActivity extends Activity implements DataPacketListener,View.On
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Initialize the SpriteFactory
-        SpriteFactory.getInstance().initialize(getResources());
+        //Initialize the TextureTool
+        TextureTool.getInstance().initialize(getResources());
         ShaderTool.init(getResources());
 
         setContentView(R.layout.game);

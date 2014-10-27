@@ -317,10 +317,9 @@ public class StarMap implements ByteSerializeable,DataPacketListener {
             int i=0;
             Log.d(TAG,"There are "+GameEngine.getPlayers().size()+" players in this blob generation (and "+stars.size()+" stars)");
             for(Player p : GameEngine.getPlayers()) {
-                Collection<List<Vector>> userBlobs = metaBalls.getBlobsFor(p);
-                for(List<Vector> path : userBlobs) {
-                    newBlobs.add(new BlobSprite(path, colors[i]));
-                }
+                Collection<Vector> userBlobs = metaBalls.getBlobsFor(p);
+                newBlobs.add(new BlobSprite(userBlobs, colors[i]));
+
                 i++;
             }
             blobs=newBlobs;

@@ -3,7 +3,6 @@ package com.svamp.planetwars.sprite;
 import android.opengl.GLES20;
 import android.util.Log;
 import com.svamp.planetwars.R;
-import com.svamp.planetwars.ShaderTool;
 
 import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
@@ -29,9 +28,6 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         //Switch to the texture we need, if applicable.
         if(texHandle != -1) {
-            // Set the active texture unit to texture unit 0.
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-
             // Bind the texture to this unit.
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texHandle);
 
@@ -101,8 +97,8 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
                 .put(bounds.left).put(bounds.bottom).put(0)
                 .put(bounds.left).put(bounds.top).put(0)
                 .put(bounds.right).put(bounds.top).put(0)
-                .put(bounds.right).put(bounds.bottom).put(0);
-        vertexBuffer.rewind();
+                .put(bounds.right).put(bounds.bottom).put(0)
+                .rewind();
     }
 
 
@@ -121,11 +117,13 @@ public abstract class AbstractSquareSprite extends AbstractSprite {
         // Rewind buffers
         drawOrderBuffer.rewind();
         textureOrderBuffer.rewind();
-
-        int vertexShaderHandle = ShaderTool.loadShader(glUnused, GLES20.GL_VERTEX_SHADER, R.string.shader_tex_vert);
-        int fragmentShaderHandle = ShaderTool.loadShader(glUnused, GLES20.GL_FRAGMENT_SHADER, R.string.shader_tex_frag);
+        final ShaderTool shaderTool = ShaderTool.getInstance();
+        final int vertexShaderHandle = shaderTool
+                .loadShader(glUnused, GLES20.GL_VERTEX_SHADER, R.string.shader_tex_vert);
+        final int fragmentShaderHandle = shaderTool
+                .loadShader(glUnused, GLES20.GL_FRAGMENT_SHADER, R.string.shader_tex_frag);
         // Create a program object and store the handle to it.
-        mProgramHandle = ShaderTool.makeProgram(glUnused,vertexShaderHandle,fragmentShaderHandle);
+        mProgramHandle = shaderTool.makeProgram(glUnused,vertexShaderHandle,fragmentShaderHandle);
 
         // Set program handles. These will later be used to pass in values to the program.
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "MVPMatrix");

@@ -1,6 +1,5 @@
 package com.svamp.planetwars;
 
-import android.content.res.Resources;
 import android.util.Log;
 import com.svamp.planetwars.math.Vector;
 import com.svamp.planetwars.network.DataPacketListener;

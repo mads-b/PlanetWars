@@ -3,8 +3,8 @@ package com.svamp.planetwars.sprite.hud;
 import android.opengl.GLES20;
 import com.svamp.planetwars.Fleet;
 import com.svamp.planetwars.R;
+import com.svamp.planetwars.opengl.TextureTool;
 import com.svamp.planetwars.math.Vector;
-import com.svamp.planetwars.sprite.SpriteFactory;
 import com.svamp.planetwars.sprite.StarSprite;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -50,9 +50,9 @@ public class BuildSelectionSprite extends HudSprite {
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         //Texture not loaded. Load it. this is a hack. TODO: Preload textures.
         if(glTexId == -1) {
-            glTexId = SpriteFactory.getInstance()
+            glTexId = TextureTool.getInstance()
                     .makeAndRegisterDrawable(glUnused, R.drawable.planetwars_selector, GLES20.GL_CLAMP_TO_EDGE);
-            selectorGlTexId = SpriteFactory.getInstance()
+            selectorGlTexId = TextureTool.getInstance()
                     .makeAndRegisterDrawable(glUnused, R.drawable.planetwars_selector_marker, GLES20.GL_CLAMP_TO_EDGE);
             super.setTexture(glTexId);
             selector.setTexture(selectorGlTexId);

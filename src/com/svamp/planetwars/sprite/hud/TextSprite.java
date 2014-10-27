@@ -3,8 +3,7 @@ package com.svamp.planetwars.sprite.hud;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Log;
-import com.svamp.planetwars.sprite.SpriteFactory;
+import com.svamp.planetwars.opengl.TextureTool;
 
 import javax.microedition.khronos.opengles.GL10;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,9 +41,9 @@ public class TextSprite extends HudSprite {
     public void draw(GL10 glUnused, float[] mvpMatrix) {
         if(textDirty.getAndSet(false)) {
             //Create new texture
-            int newHandle = SpriteFactory.getInstance().makeAndRegisterText(glUnused, curText, textPaint, strokePaint);
+            int newHandle = TextureTool.getInstance().makeAndRegisterText(glUnused, curText, textPaint, strokePaint);
             //Delete old texture
-            SpriteFactory.getInstance().deleteTextureFromGL(glUnused,glTexId);
+            TextureTool.getInstance().deleteTextureFromGL(glUnused,glTexId);
             //Create new texture, register it in GL, and set it as our texture.
             super.setTexture(newHandle);
             glTexId = newHandle;
